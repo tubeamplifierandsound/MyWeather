@@ -10,22 +10,22 @@ sealed class BottomNavItem(
 ) {
     data object Home: BottomNavItem(
         route = "HomeScreenNavigation",
-        title = "home",
+        title = "Home",
         iconId = R.drawable.ic_home
     )
     data object Forecast: BottomNavItem(
         route = "ForecastScreenNavigation",
-        title = "forecast",
+        title = "Forecast",
         iconId = R.drawable.ic_forecast
     )
     data object AirPollution: BottomNavItem(
         route = "AirPollutionScreenNavigation",
-        title = "air polution",
+        title = "Air Polution",
         iconId = R.drawable.ic_air
     )
     data object GeoCoding: BottomNavItem(
         route = "GeoCodingScreenNavigation",
-        title = "geo coding",
+        title = "Geo Coding",
         iconId = R.drawable.ic_air
     )
 }

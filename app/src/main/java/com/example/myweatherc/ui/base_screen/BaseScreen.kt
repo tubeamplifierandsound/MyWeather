@@ -53,7 +53,9 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.request.crossfade
- 
+import com.example.myweatherc.navigation.GeoCodingScreenNavigation
+import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
+
 @Composable
 fun BaseScreen() {
     val navController = rememberNavController()
@@ -147,7 +149,7 @@ fun BaseScreen() {
                     BottomNavBar(
                         onHomeClick = { navController.navigate(HomeScreenNavigation) },
                         onForecastClick = { navController.navigate(ForecastScreenNavigation()) },
-                        onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation()) }
+                        onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
                         onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
                     )
                 },
