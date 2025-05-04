@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.retrofit.moshi)
     implementation(libs.okhttp3.logging.interceptor)
 
+    implementation(libs.androidx.compose.material3.material3)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

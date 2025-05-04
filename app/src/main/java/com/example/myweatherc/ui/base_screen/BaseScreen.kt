@@ -20,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,12 +49,19 @@ import com.example.myweatherc.ui.settings_screen.SettingsScreen
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myweatherc.client.APISettings
+import com.example.myweatherc.client.RetrofitClient
+import com.example.myweatherc.data.responses.geocoding.GeoObject
+import com.example.myweatherc.navigation.GeoCodingScreenNavigation
+import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
 import java.time.format.TextStyle
 
 
 @Composable
-fun BaseScreen(){
+fun BaseScreen() {
     val navController = rememberNavController()
+
+    var currentGeoObject = remember { mutableStateOf<GeoObject?>(null) }
 
 //    // Список экранов, где BottomMenu нужно показывать
 //    val screensWithBottomMenu = listOf(
@@ -63,7 +73,6 @@ fun BaseScreen(){
 //    // Определение текущего экрана
 //    val currentBackStackEntry = navController.currentBackStackEntryAsState()
 //    var currentDestination: String? = currentBackStackEntry.value?.destination?.route
-
 
 
     // Состояние для управления боковым меню
@@ -81,25 +90,38 @@ fun BaseScreen(){
         drawerState = drawerState,
         modifier = Modifier.fillMaxWidth(),
         drawerContent = {
-            Column(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.55f).background(Color.LightGray)
-                ) {
-                Text("Настройки", modifier = Modifier.clickable {
-                    coroutineScope.launch { drawerState.close() }
-                    navController.navigate(SettingsScreenNavigation())
-                }.padding(top = 86.dp, start = 16.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.55f)
+                    .background(Color.LightGray)
+            ) {
+                Text(
+                    "Настройки", modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch { drawerState.close() }
+                            navController.navigate(SettingsScreenNavigation())
+                        }
+                        .padding(top = 86.dp, start = 16.dp),
                     style = textStyle
 
                 )
-                Text("Карты", modifier = Modifier.clickable {
-                    coroutineScope.launch { drawerState.close() }
-                    navController.navigate(MapScreenNavigation())
-                }.padding(top = 16.dp, start = 16.dp),
+                Text(
+                    "Карты", modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch { drawerState.close() }
+                            navController.navigate(MapScreenNavigation())
+                        }
+                        .padding(top = 16.dp, start = 16.dp),
                     style = textStyle
                 )
-                Text("О приложении", modifier = Modifier.clickable {
-                    coroutineScope.launch { drawerState.close() }
-                    navController.navigate(AboutAppScreenNavigation())
-                }.padding(top = 16.dp, start = 16.dp),
+                Text(
+                    "О приложении", modifier = Modifier
+                        .clickable {
+                            coroutineScope.launch { drawerState.close() }
+                            navController.navigate(AboutAppScreenNavigation())
+                        }
+                        .padding(top = 16.dp, start = 16.dp),
                     style = textStyle
                 )
             }
@@ -122,20 +144,19 @@ fun BaseScreen(){
             },
 
             bottomBar = {
-
                 //if (HomeScreenNavigation::class.simpleName in screensWithBottomMenu) {
-                    BottomNavBar(
-                        onHomeClick = { navController.navigate(HomeScreenNavigation) },
-                        onForecastClick = {navController.navigate(ForecastScreenNavigation( /* //? */ ))},
-                        onAirPollutionClick = {navController.navigate(AirPollutionScreenNavigation( /* //? */ ))}
-                    )
+                BottomNavBar(
+                    onHomeClick = { navController.navigate(HomeScreenNavigation) },
+                    onForecastClick = { navController.navigate(ForecastScreenNavigation( /* //? */)) },
+                    onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
+                    onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
+                )
                 //}
             }
         ) { paddingValues ->
             NavHost(
                 navController = navController,
                 startDestination = HomeScreenNavigation,
-                // Для добавления отступов
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable<HomeScreenNavigation> { navEntry ->
@@ -150,7 +171,6 @@ fun BaseScreen(){
                     val navData = navEntry.toRoute<AirPollutionScreenNavigation>()
                     AirPollutionScreen(navData)
                 }
-
                 composable<SettingsScreenNavigation> { navEntry ->
                     val navData = navEntry.toRoute<SettingsScreenNavigation>()
                     SettingsScreen(navData)
@@ -163,7 +183,10 @@ fun BaseScreen(){
                     val navData = navEntry.toRoute<AboutAppScreenNavigation>()
                     AboutAppScreen(navData)
                 }
-
+                composable<GeoCodingScreenNavigation> { navEntry ->
+                    val navData = navEntry.toRoute<GeoCodingScreenNavigation>()
+                    GeoCodingScreen(navData)
+                }
             }
         }
     }

@@ -23,4 +23,9 @@ sealed class BottomNavItem(
         title = "air polution",
         iconId = R.drawable.ic_air
     )
+    data object GeoCoding: BottomNavItem(
+        route = "GeoCodingScreenNavigation",
+        title = "geo coding",
+        iconId = R.drawable.ic_air
+    )
 }
