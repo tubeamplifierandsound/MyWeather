@@ -106,7 +106,7 @@ fun HomeScreen(
                 )
                 weatherResponse = response
             } catch (e: Exception) {
-                errorText = "Ошибка: ${e.localizedMessage}"
+                errorText = "Error: ${e.localizedMessage}"
             }
         }
     }
@@ -194,13 +194,13 @@ fun HomeScreen(
                                 Text(
                                     text = weatherResponse!!.weather.firstOrNull()?.description
                                         ?.replaceFirstChar { it.uppercaseChar() }
-                                        ?: "Нет данных", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                                        ?: "No Data", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold,
                                 )
                             }
 
                             AsyncImage(
                                 model = "https://openweathermap.org/img/wn/${iconCode}@4x.png",
-                                contentDescription = "Иконка погоды",
+                                contentDescription = "Weather Icon",
                                 modifier = Modifier
                                     .size(100.dp)
                             )
@@ -223,14 +223,14 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Дополнительные сведения",
+                                text = "Additional info",
                                 fontWeight = FontWeight.Bold
                             )
 
                             IconButton(onClick = { isExpanded = !isExpanded }) {
                                 Icon(
                                     imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (isExpanded) "Скрыть" else "Показать"
+                                    contentDescription = if (isExpanded) "Hide" else "Show"
                                 )
                             }
                         }
