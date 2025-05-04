@@ -13,12 +13,14 @@ import androidx.compose.ui.res.painterResource
 fun BottomNavBar(
     onHomeClick: () -> Unit,
     onForecastClick: () -> Unit,
-    onAirPollutionClick: () -> Unit
+    onAirPollutionClick: () -> Unit,
+    onGeoCodingClick: () -> Unit
 ) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Forecast,
-        BottomNavItem.AirPollution
+        BottomNavItem.AirPollution,
+        BottomNavItem.GeoCoding
     )
 
     val selectedItem = remember { mutableStateOf(BottomNavItem.Home.route) }
@@ -33,6 +35,7 @@ fun BottomNavBar(
                         BottomNavItem.Home -> onHomeClick()
                         BottomNavItem.Forecast -> onForecastClick()
                         BottomNavItem.AirPollution -> onAirPollutionClick()
+                        BottomNavItem.GeoCoding -> onGeoCodingClick()
                     }
                 },
                 icon = {
