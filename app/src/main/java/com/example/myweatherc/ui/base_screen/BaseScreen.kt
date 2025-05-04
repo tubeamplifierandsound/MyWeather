@@ -1,5 +1,5 @@
 package com.example.myweatherc.ui.base_screen
-
+ 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,9 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,20 +53,12 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.request.crossfade
-import com.example.myweatherc.client.APISettings
-import com.example.myweatherc.client.RetrofitClient
-import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.navigation.GeoCodingScreenNavigation
 import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
-import java.time.format.TextStyle
-
 
 @Composable
 fun BaseScreen() {
     val navController = rememberNavController()
-
-    var currentGeoObject = remember { mutableStateOf<GeoObject?>(null) }
-
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val textStyle = androidx.compose.ui.text.TextStyle(
@@ -77,45 +66,61 @@ fun BaseScreen() {
         fontWeight = FontWeight.Medium,
         fontFamily = FontFamily.Serif
     )
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        modifier = Modifier.fillMaxWidth(),
-        drawerContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.55f)
-                    .background(Color.LightGray)
-            ) {
-                Text(
-                    "Настройки", modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch { drawerState.close() }
-                            navController.navigate(SettingsScreenNavigation())
-                        }
-                        .padding(top = 86.dp, start = 16.dp),
-                    style = textStyle
-
-                )
-                Text(
-                    "Карты", modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch { drawerState.close() }
-                            navController.navigate(MapScreenNavigation())
-                        }
-                        .padding(top = 16.dp, start = 16.dp),
-                    style = textStyle
-                )
-                Text(
-                    "О приложении", modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch { drawerState.close() }
-                            navController.navigate(AboutAppScreenNavigation())
-                        }
-                        .padding(top = 16.dp, start = 16.dp),
-                    style = textStyle
-                )
+ 
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data("https://i.pinimg.com/736x/90/36/6b/90366b5f05c0c6cf57472d463a18d1d3.jpg")
+                .crossfade(true)
+                .build(),
+            contentDescription = "App Background",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+ 
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            modifier = Modifier.fillMaxWidth(),
+            drawerContent = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.55f)
+                        .background(Color.Black.copy(alpha = 0.7f))
+                ) {
+                    Text(
+                        "Настройки",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch { drawerState.close() }
+                                navController.navigate(SettingsScreenNavigation())
+                            }
+                            .padding(top = 86.dp, start = 16.dp),
+                        style = textStyle.copy(color = Color.White)
+                    )
+                    Text(
+                        "Карты",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch { drawerState.close() }
+                                navController.navigate(MapScreenNavigation())
+                            }
+                            .padding(top = 16.dp, start = 16.dp),
+                        style = textStyle.copy(color = Color.White)
+                    )
+                    Text(
+                        "О приложении",
+                        modifier = Modifier
+                            .clickable {
+                                coroutineScope.launch { drawerState.close() }
+                                navController.navigate(AboutAppScreenNavigation())
+                            }
+                            .padding(top = 16.dp, start = 16.dp),
+                        style = textStyle.copy(color = Color.White)
+                    )
+                }
             }
         ) {
             Scaffold(
@@ -138,32 +143,34 @@ fun BaseScreen() {
                                 )
                             }
                         }
-
-                    }
-                )
-            },
-
-            bottomBar = {
-                //if (HomeScreenNavigation::class.simpleName in screensWithBottomMenu) {
-                BottomNavBar(
-                    onHomeClick = { navController.navigate(HomeScreenNavigation) },
-                    onForecastClick = { navController.navigate(ForecastScreenNavigation( /* //? */)) },
-                    onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
-                    onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
-                )
-                //}
-            }
-        ) { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = HomeScreenNavigation,
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                composable<HomeScreenNavigation> { navEntry ->
-                    val navData = navEntry.toRoute<HomeScreenNavigation>()
-                    HomeScreen(navData)
-                }
-                 composable<ForecastScreenNavigation> { navEntry ->
+                    )
+                },
+                bottomBar = {
+                    BottomNavBar(
+                        onHomeClick = { navController.navigate(HomeScreenNavigation) },
+                        onForecastClick = { navController.navigate(ForecastScreenNavigation()) },
+                        onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
+                        onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
+                    )
+                },
+                containerColor = Color.Transparent
+            ) { paddingValues ->
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    color = Color.Transparent
+                ) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = HomeScreenNavigation,
+                        modifier = Modifier.background(Color.Transparent)
+                    ) {
+                        composable<HomeScreenNavigation> { navEntry ->
+                            val navData = navEntry.toRoute<HomeScreenNavigation>()
+                            HomeScreen(navData)
+                        }
+                        composable<ForecastScreenNavigation> { navEntry ->
                             val navData = navEntry.toRoute<ForecastScreenNavigation>()
                             ForecastScreen(navData)
                         }
@@ -179,13 +186,15 @@ fun BaseScreen() {
                             val navData = navEntry.toRoute<MapScreenNavigation>()
                             MapScreen(navData)
                         }
-                composable<AboutAppScreenNavigation> { navEntry ->
-                    val navData = navEntry.toRoute<AboutAppScreenNavigation>()
-                    AboutAppScreen(navData)
-                }
-                composable<GeoCodingScreenNavigation> { navEntry ->
-                    val navData = navEntry.toRoute<GeoCodingScreenNavigation>()
-                    GeoCodingScreen(navData)
+                        composable<AboutAppScreenNavigation> { navEntry ->
+                            val navData = navEntry.toRoute<AboutAppScreenNavigation>()
+                            AboutAppScreen(navData)
+                        }
+                        composable<GeoCodingScreenNavigation> { navEntry ->
+                            val navData = navEntry.toRoute<GeoCodingScreenNavigation>()
+                            GeoCodingScreen(navData)
+                        } 
+                    }
                 }
             }
         }
