@@ -56,7 +56,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
-
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.kotlin.codegen)
@@ -64,6 +63,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi)
     implementation(libs.okhttp3.logging.interceptor)
+
+    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    implementation("androidx.compose.material:material-icons-extended")
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network)

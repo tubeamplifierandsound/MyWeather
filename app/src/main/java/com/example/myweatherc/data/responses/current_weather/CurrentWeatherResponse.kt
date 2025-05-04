@@ -8,6 +8,8 @@ import com.example.myweatherc.data.responses.current_weather.objects.Snow1h
 import com.example.myweatherc.data.responses.current_weather.objects.Sys
 import com.example.myweatherc.data.responses.current_weather.objects.Weather
 import com.example.myweatherc.data.responses.current_weather.objects.Wind
+import com.example.myweatherc.data.responses.forecast_3h.objects.Rain3h
+import com.example.myweatherc.data.responses.forecast_3h.objects.Snow3h
 
 data class CurrentWeatherResponse(
     val clouds: Clouds,
