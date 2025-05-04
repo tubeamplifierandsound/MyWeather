@@ -8,9 +8,7 @@ import androidx.compose.ui.Modifier
 import com.example.myweatherc.navigation.MapScreenNavigation
 
 @Composable
-fun MapScreen(
-    navData: MapScreenNavigation
-) {
+fun MapScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
         Text("Map Screen")
     }

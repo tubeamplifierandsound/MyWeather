@@ -17,16 +17,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AirPollutionScreen(
-    navData: AirPollutionScreenNavigation
+    geoObject: GeoObject?
 ) {
     var pollutionData by remember { mutableStateOf<AirPollutionResponse?>(null) }
-    var geoObject by remember { mutableStateOf<GeoObject?>(null) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(AirPollutionScreenNavigation) {
         scope.launch {
             try {
-                geoObject = RetrofitClient.weatherAPIService.getGeoObjectByZip("E14,GB", APISettings.API_KEY)
                 pollutionData = RetrofitClient.weatherAPIService.getAirPollution(50.0,50.0, APISettings.API_KEY)
             } catch (e: Exception) {
             }

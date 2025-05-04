@@ -16,15 +16,19 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherc.data.responses.geocoding.GeoObject
 
 @Composable
-fun GeoObjectItem(geoObject: GeoObject) {
+fun GeoObjectItem(
+    geoObject: GeoObject,
+    onItemSelected: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
+        onClick = onItemSelected
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
                 text = geoObject.name,

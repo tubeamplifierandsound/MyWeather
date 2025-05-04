@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +31,7 @@ import com.example.myweatherc.ui.geocoding_screen.ui_elements.GeoObjectItem
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SearchTypeSelector
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SingleInputField
 
-enum class SearchType{
+enum class SearchType {
     COORDINATES,
     ZIP_CODE,
     NAME
@@ -38,7 +39,7 @@ enum class SearchType{
 
 @Composable
 fun GeoCodingScreen(
-    navData: GeoCodingScreenNavigation
+    geoObject: MutableState<GeoObject?>
 ) {
     var selectedSearchType by remember { mutableStateOf(SearchType.NAME) }
     var latitude by remember { mutableStateOf("") }
@@ -78,6 +79,7 @@ fun GeoCodingScreen(
                     onLonChange = { longitude = it }
                 )
             }
+
             SearchType.ZIP_CODE -> {
                 SingleInputField(
                     value = zipCode,
@@ -85,6 +87,7 @@ fun GeoCodingScreen(
                     label = "Zip Code"
                 )
             }
+
             SearchType.NAME -> {
                 SingleInputField(
                     value = cityName,
@@ -112,12 +115,14 @@ fun GeoCodingScreen(
                                 longitude = longitude.toDouble(),
                                 apiKey = APISettings.API_KEY
                             )
+
                             SearchType.ZIP_CODE -> listOf(
                                 RetrofitClient.weatherAPIService.getGeoObjectByZip(
                                     zipCode = zipCode,
                                     apiKey = APISettings.API_KEY
                                 )
                             )
+
                             SearchType.NAME -> RetrofitClient.weatherAPIService.getGeoObjectsByName(
                                 city = cityName,
                                 apiKey = APISettings.API_KEY
@@ -154,8 +159,10 @@ fun GeoCodingScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(geoObjects) { geoObject ->
-                    GeoObjectItem(geoObject = geoObject)
+                items(geoObjects) { it ->
+                    GeoObjectItem(geoObject = it) {
+                        geoObject.value = it
+                    }
                 }
             }
         }
