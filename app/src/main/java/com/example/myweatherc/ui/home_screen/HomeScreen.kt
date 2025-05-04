@@ -37,6 +37,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.myweatherc.client.APISettings
+import com.example.myweatherc.data.responses.geocoding.GeoObject
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -51,62 +53,26 @@ fun convertUnixToDateTime(unixTime: Int): String {
 
 @Composable
 fun HomeScreen(
-    navData: HomeScreenNavigation,
+    geoObject: GeoObject?
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val apiKey = "e7fb106ce17fa922a2b57b9a58d67a04"
-    val context = LocalContext.current
-
     var weatherResponse by remember { mutableStateOf<CurrentWeatherResponse?>(null) }
+
     var errorText by remember { mutableStateOf<String?>(null) }
-    var location by remember { mutableStateOf<Location?>(null) }
-    var locationPermissionGranted by remember { mutableStateOf(false) }
-
-    // Проверка и запрос разрешений
-    val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        locationPermissionGranted = isGranted
-        if (isGranted) {
-            getLastKnownLocation(context) { loc ->
-                location = loc
-            }
-        }
-    }
-
-    // Проверка разрешений при первом запуске
-    LaunchedEffect(Unit) {
-        val permissionCheckResult = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-
-        locationPermissionGranted = permissionCheckResult == PackageManager.PERMISSION_GRANTED
-
-        if (locationPermissionGranted) {
-            getLastKnownLocation(context) { loc ->
-                location = loc
-            }
-        } else {
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
-
-    // Запрос погоды с учетом местоположения
-    LaunchedEffect(location) {
-        coroutineScope.launch {
-            try {
-                val latitude = location?.latitude ?: 44.34
-                val longitude = location?.longitude ?: 10.99
-
-                val response = RetrofitClient.weatherAPIService.getCurrentWeather(
-                    latitude = latitude,
-                    longitude = longitude,
-                    apiKey = apiKey
-                )
-                weatherResponse = response
-            } catch (e: Exception) {
-                errorText = "Error: ${e.localizedMessage}"
+    
+    LaunchedEffect(geoObject) {
+        if(geoObject != null){
+            coroutineScope.launch {
+                try{
+                    weatherResponse = RetrofitClient.weatherAPIService.getCurrentWeather(
+                        latitude = geoObject.lat,
+                        longitude = geoObject.lon,
+                        apiKey = APISettings.API_KEY
+                    )
+                }
+                catch (e: Exception){
+                    errorText = "Error: ${e.localizedMessage}"
+                }
             }
         }
     }
@@ -266,7 +232,6 @@ fun HomeScreen(
                         }
                     }
                 }
-
             }
             else -> {
                 Box(
@@ -282,25 +247,5 @@ fun HomeScreen(
                 }
             }
         }
-    }
-}
-
-fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-    if (ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED ||
-        ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    ) {
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        callback(location)
-    } else {
-        callback(null)
     }
 }

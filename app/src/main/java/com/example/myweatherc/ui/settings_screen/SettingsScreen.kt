@@ -24,7 +24,6 @@ import com.example.myweatherc.navigation.SettingsScreenNavigation
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    navData: SettingsScreenNavigation
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedMetric by remember { mutableStateOf("Метрическая система") }

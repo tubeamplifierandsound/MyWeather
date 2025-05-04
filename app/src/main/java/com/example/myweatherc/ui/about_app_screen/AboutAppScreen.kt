@@ -22,9 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myweatherc.navigation.AboutAppScreenNavigation
 
 @Composable
-fun AboutAppScreen(
-    navData: AboutAppScreenNavigation
-) {
+fun AboutAppScreen() {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Transparent

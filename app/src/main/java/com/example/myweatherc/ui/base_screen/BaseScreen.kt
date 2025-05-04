@@ -1,5 +1,12 @@
 package com.example.myweatherc.ui.base_screen
  
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,7 +30,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -52,15 +64,98 @@ import com.example.myweatherc.ui.settings_screen.SettingsScreen
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import coil3.request.crossfade
+import com.example.myweatherc.client.APISettings
+import com.example.myweatherc.client.RetrofitClient
+import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.navigation.GeoCodingScreenNavigation
 import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
 
+fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+        ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        callback(location)
+    } else {
+        callback(null)
+    }
+}
+
+
 @Composable
 fun BaseScreen() {
+    val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    var errorText by remember { mutableStateOf<String?>(null) }
+    var location by remember { mutableStateOf<Location?>(null) }
+    var locationPermissionGranted by remember { mutableStateOf(false) }
+
+    // Проверка и запрос разрешений
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        locationPermissionGranted = isGranted
+        if (isGranted) {
+            getLastKnownLocation(context) { loc ->
+                location = loc
+            }
+        }
+    }
+
+    // Проверка разрешений при первом запуске
+    LaunchedEffect(Unit) {
+        val permissionCheckResult = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        locationPermissionGranted = permissionCheckResult == PackageManager.PERMISSION_GRANTED
+
+        if (locationPermissionGranted) {
+            getLastKnownLocation(context) { loc ->
+                location = loc
+            }
+        } else {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    val currentGeoObject = remember { mutableStateOf<GeoObject?>(null) }
+
+    // Запрос погоды с учетом местоположения
+    LaunchedEffect(location) {
+        coroutineScope.launch {
+            try {
+                val latitude = location?.latitude ?: 44.34
+                val longitude = location?.longitude ?: 10.99
+
+                currentGeoObject.value = RetrofitClient.weatherAPIService.getGeoObjectByCoords(
+                    latitude = latitude,
+                    longitude = longitude,
+                    apiKey = APISettings.API_KEY
+                )[0]
+
+            } catch (e: Exception) {
+                errorText = "Error: ${e.localizedMessage}"
+            }
+        }
+    }
+
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
     val textStyle = androidx.compose.ui.text.TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.Medium,
@@ -95,7 +190,7 @@ fun BaseScreen() {
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch { drawerState.close() }
-                                navController.navigate(SettingsScreenNavigation())
+                                navController.navigate(SettingsScreenNavigation)
                             }
                             .padding(top = 86.dp, start = 16.dp),
                         style = textStyle.copy(color = Color.White)
@@ -105,7 +200,7 @@ fun BaseScreen() {
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch { drawerState.close() }
-                                navController.navigate(MapScreenNavigation())
+                                navController.navigate(MapScreenNavigation)
                             }
                             .padding(top = 16.dp, start = 16.dp),
                         style = textStyle.copy(color = Color.White)
@@ -115,7 +210,7 @@ fun BaseScreen() {
                         modifier = Modifier
                             .clickable {
                                 coroutineScope.launch { drawerState.close() }
-                                navController.navigate(AboutAppScreenNavigation())
+                                navController.navigate(AboutAppScreenNavigation)
                             }
                             .padding(top = 16.dp, start = 16.dp),
                         style = textStyle.copy(color = Color.White)
@@ -148,7 +243,7 @@ fun BaseScreen() {
                 bottomBar = {
                     BottomNavBar(
                         onHomeClick = { navController.navigate(HomeScreenNavigation) },
-                        onForecastClick = { navController.navigate(ForecastScreenNavigation()) },
+                        onForecastClick = { navController.navigate(ForecastScreenNavigation) },
                         onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
                         onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
                     )
@@ -166,34 +261,27 @@ fun BaseScreen() {
                         startDestination = HomeScreenNavigation,
                         modifier = Modifier.background(Color.Transparent)
                     ) {
-                        composable<HomeScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<HomeScreenNavigation>()
-                            HomeScreen(navData)
+                        composable<HomeScreenNavigation> {
+                            HomeScreen(currentGeoObject.value)
                         }
-                        composable<ForecastScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<ForecastScreenNavigation>()
-                            ForecastScreen(navData)
+                        composable<ForecastScreenNavigation> {
+                            ForecastScreen(currentGeoObject.value)
                         }
-                        composable<AirPollutionScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<AirPollutionScreenNavigation>()
-                            AirPollutionScreen(navData)
+                        composable<AirPollutionScreenNavigation> {
+                            AirPollutionScreen(currentGeoObject.value)
                         }
-                        composable<SettingsScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<SettingsScreenNavigation>()
-                            SettingsScreen(navData)
+                        composable<GeoCodingScreenNavigation> {
+                            GeoCodingScreen(currentGeoObject)
                         }
-                        composable<MapScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<MapScreenNavigation>()
-                            MapScreen(navData)
+                        composable<SettingsScreenNavigation> {
+                            SettingsScreen()
                         }
-                        composable<AboutAppScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<AboutAppScreenNavigation>()
-                            AboutAppScreen(navData)
+                        composable<MapScreenNavigation> {
+                            MapScreen()
                         }
-                        composable<GeoCodingScreenNavigation> { navEntry ->
-                            val navData = navEntry.toRoute<GeoCodingScreenNavigation>()
-                            GeoCodingScreen(navData)
-                        } 
+                        composable<AboutAppScreenNavigation> {
+                            AboutAppScreen()
+                        }
                     }
                 }
             }
