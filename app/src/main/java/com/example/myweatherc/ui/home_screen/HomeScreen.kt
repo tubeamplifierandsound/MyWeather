@@ -34,6 +34,7 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.platform.LocalContext
@@ -247,11 +248,7 @@ fun HomeScreen(
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Loading weather data...",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    CircularProgressIndicator()
                 }
             }
         }
