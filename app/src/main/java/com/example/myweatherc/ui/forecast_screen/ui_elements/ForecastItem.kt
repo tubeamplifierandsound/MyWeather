@@ -90,7 +90,7 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                 // Температура и стрелка
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = String.format("%.1f${metricsType.measurement}", forecast.main.temp),
+                        text = String.format("%.1f${metricsType.tempMeasurement}", forecast.main.temp),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Icon(
@@ -120,7 +120,7 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                     WeatherDetailRow(
                         icon = Icons.Default.Air,
                         title = "Wind",
-                        value = "${forecast.wind.speed} m/s"
+                        value = "${forecast.wind.speed} ${metricsType.windMeasurement}"
                     )
 //                    Button(
 //                        onClick = onClick,

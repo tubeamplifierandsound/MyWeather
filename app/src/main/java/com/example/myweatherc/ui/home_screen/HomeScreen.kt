@@ -128,7 +128,7 @@ fun HomeScreen(
                                 Text(
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    text = "${weatherResponse!!.main.temp}${metricsType.measurement}",
+                                    text = "${weatherResponse!!.main.temp}${metricsType.tempMeasurement}",
                                     fontSize = 42.sp,
                                     lineHeight = 1.1.em,
                                     fontWeight = FontWeight.Bold,
@@ -137,7 +137,7 @@ fun HomeScreen(
                                 )
 
                                 Text(
-                                    text = "Feels like ${weatherResponse!!.main.feels_like}${metricsType.measurement}",
+                                    text = "Feels like ${weatherResponse!!.main.feels_like}${metricsType.tempMeasurement}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -177,8 +177,8 @@ fun HomeScreen(
                             thickness = 1.dp,
                             color = Color.Gray.copy(alpha = 0.5f)
                         )
-                        Text(text = "Wind speed: ${weatherResponse!!.wind.speed} m/s, direction: ${weatherResponse!!.wind.deg}°", color = Color.LightGray,)
-                        Text(text = "Wind gust: ${weatherResponse!!.wind.gust} m/s", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = "Wind speed: ${weatherResponse!!.wind.speed} ${metricsType.windMeasurement}, direction: ${weatherResponse!!.wind.deg}°", color = Color.LightGray,)
+                        Text(text = "Wind gust: ${weatherResponse!!.wind.gust} ${metricsType.windMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 4.dp),
                             thickness = 1.dp,
