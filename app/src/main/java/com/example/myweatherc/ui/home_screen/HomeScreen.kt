@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.em
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.myweatherc.app_settings.SettingsManager.metricsType
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
@@ -127,7 +128,7 @@ fun HomeScreen(
                                 Text(
                                     modifier = Modifier
                                         .padding(top = 20.dp),
-                                    text = "${weatherResponse!!.main.temp}°C",
+                                    text = "${weatherResponse!!.main.temp}${metricsType.measurement}",
                                     fontSize = 42.sp,
                                     lineHeight = 1.1.em,
                                     fontWeight = FontWeight.Bold,
@@ -136,7 +137,7 @@ fun HomeScreen(
                                 )
 
                                 Text(
-                                    text = "Feels like ${weatherResponse!!.main.feels_like}°C",
+                                    text = "Feels like ${weatherResponse!!.main.feels_like}${metricsType.measurement}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White

@@ -166,10 +166,7 @@ fun GeoCodingScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(geoObjects) { it ->
-//                    GeoObjectItem(geoObject = it) {
-//                        geoObject.value = it
-//                    }
+                items(geoObjects) {
                     GeoInfo(geoObject = it,
                         isExpanded = true,
                         onItemSelected = {

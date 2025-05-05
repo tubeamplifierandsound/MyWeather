@@ -14,7 +14,7 @@ data class Forecast3h(
     val rain: Rain3h?,
     val snow: Snow3h?,
     val sys: Sys,
-    val visibility: Int,
+    val visibility: Int?,
     val weather: List<Weather>,
     val wind: Wind
 )

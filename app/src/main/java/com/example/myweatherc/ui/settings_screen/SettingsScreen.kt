@@ -1,5 +1,6 @@
 package com.example.myweatherc.ui.settings_screen
 
+import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,19 +22,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myweatherc.app_settings.Metrics
 import com.example.myweatherc.app_settings.SettingsManager
+import com.example.myweatherc.client.APISettings
+import com.example.myweatherc.client.RetrofitClient
+import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.navigation.SettingsScreenNavigation
 import com.example.myweatherc.ui.forecast_screen.ForcastType
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    geoObject: MutableState<GeoObject?>,
+    location : Location?
 ) {
     var expanded by remember { mutableStateOf(false) }
-//    var selectedMetric by remember { mutableStateOf(Metrics.METRIC) }
-    var detectLocation by remember { mutableStateOf(true) }
+    var detectLocation by remember { mutableStateOf(SettingsManager.detectLocation) }
 
-    val metrics  = Metrics.values();
-    //val metricsOptions = listOf("Метрическая система", "Стандартная")
+    val couroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -49,7 +54,7 @@ fun SettingsScreen(
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Система мер",
+                    text = "System of measures",
                     color = Color.DarkGray,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -70,7 +75,6 @@ fun SettingsScreen(
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         }
                     )
-
                     ExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
@@ -100,10 +104,19 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Checkbox(
-                        checked = SettingsManager.detectLocation,
+                        checked = detectLocation,
                         onCheckedChange = { newVal ->
+                            detectLocation = newVal
                             SettingsManager.saveDetectLocation(newVal)
-                            detectLocation = newVal },
+                                          if(newVal == true){
+                                              couroutineScope.launch {
+                                                  geoObject.value = RetrofitClient.weatherAPIService.getGeoObjectByCoords(
+                                                      latitude = location!!.latitude,
+                                                      longitude = location!!.longitude,
+                                                      apiKey = APISettings.API_KEY
+                                                  )[0]
+                                              }
+                                          }},
                         colors = CheckboxDefaults.colors(
                             checkedColor = Color.Gray,
                             uncheckedColor = Color.LightGray
@@ -120,3 +133,4 @@ fun SettingsScreen(
         }
     }
 }
+

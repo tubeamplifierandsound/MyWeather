@@ -2,6 +2,7 @@ package com.example.myweatherc.app_settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.myweatherc.data.responses.geocoding.GeoObject
 
 object SettingsManager {
     const val STORAGE_NAME = "WEATHER_STORE"
@@ -36,6 +37,7 @@ object SettingsManager {
         preferences.edit().putBoolean("detect_location", enabled).apply()
         detectLocation = enabled
     }
+
 
     fun loadDetectLocation() {
         detectLocation = preferences.getBoolean("detect_location", DEFAULT_LOC_DETECTION)

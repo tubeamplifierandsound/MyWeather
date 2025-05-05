@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.myweatherc.app_settings.SettingsManager.metricsType
 
 
 @Composable
@@ -89,12 +90,12 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                 // Температура и стрелка
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = String.format("%.1f°C", forecast.main.temp),
+                        text = String.format("%.1f${metricsType.measurement}", forecast.main.temp),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = if (expanded) "Свернуть" else "Развернуть",
+                        contentDescription = if (expanded) "Wrap" else "Unwrap",
                         modifier = Modifier
                             .rotate(rotationAngle)
                             .size(24.dp)
@@ -108,27 +109,27 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                 Column {
                     WeatherDetailRow(
                         icon = Icons.Default.WaterDrop,
-                        title = "Влажность",
+                        title = "Humidity",
                         value = "${forecast.main.humidity}%"
                     )
                     WeatherDetailRow(
                         icon = Icons.Default.Speed,
-                        title = "Давление",
+                        title = "Pressure",
                         value = "${forecast.main.pressure} hPa"
                     )
                     WeatherDetailRow(
                         icon = Icons.Default.Air,
-                        title = "Ветер",
+                        title = "Wind",
                         value = "${forecast.wind.speed} m/s"
                     )
-                    Button(
-                        onClick = onClick,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    ) {
-                        Text("Подробный прогноз")
-                    }
+//                    Button(
+//                        onClick = onClick,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(top = 8.dp)
+//                    ) {
+//                        Text("Подробный прогноз")
+//                    }
                 }
             }
         }

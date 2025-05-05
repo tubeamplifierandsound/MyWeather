@@ -286,7 +286,7 @@ fun getWeather(forcast3h: Forecast3h, geoObject: GeoObject?, forcastMain: Weathe
             sunset = forcastMain.city.sunset
         ),
         timezone = forcastMain.city.timezone,
-        visibility = forcast3h.visibility,
+        visibility = forcast3h.visibility ?:  0,
         weather = forcast3h.weather,
         wind = forcast3h.wind
     )

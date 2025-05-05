@@ -33,7 +33,7 @@ fun CustomDrawer(
     onCategoryClick: (item: String) -> Unit,
 ) {
     val categoryList = listOf(
-        "Настройки", "Карты", "О приложении"
+        "Settings", "Maps", "About App"
     )
 
     LaunchedEffect(Unit) {

@@ -70,6 +70,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil3.request.crossfade
 import com.example.myweatherc.R
+import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
@@ -145,8 +146,15 @@ fun BaseScreen() {
     LaunchedEffect(location) {
         coroutineScope.launch {
             try {
-                val latitude = location?.latitude ?: 44.34
-                val longitude = location?.longitude ?: 10.99
+                var latitude: Double
+                var longitude: Double
+                if (SettingsManager.detectLocation) {
+                    latitude = location?.latitude ?: 44.34
+                    longitude = location?.longitude ?: 10.99
+                }else{
+                    latitude = 44.34
+                    longitude = 10.99
+                }
 
                 currentGeoObject.value = RetrofitClient.weatherAPIService.getGeoObjectByCoords(
                     latitude = latitude,
@@ -201,9 +209,9 @@ fun BaseScreen() {
                     CustomDrawer(
                         onCategoryClick ={ item: String ->
                             when(item){
-                                "Настройки" -> navController.navigate(SettingsScreenNavigation)
-                                "Карты" -> navController.navigate(MapScreenNavigation)
-                                "О приложении" -> navController.navigate(AboutAppScreenNavigation)
+                                "Settings" -> navController.navigate(SettingsScreenNavigation)
+                                "Maps" -> navController.navigate(MapScreenNavigation)
+                                "About App" -> navController.navigate(AboutAppScreenNavigation)
                             }
                             coroutineScope.launch { drawerState.close() }
                         }
@@ -280,7 +288,7 @@ fun BaseScreen() {
                             GeoCodingScreen(currentGeoObject)
                         }
                         composable<SettingsScreenNavigation> {
-                            SettingsScreen()
+                            SettingsScreen(currentGeoObject, location)
                         }
                         composable<MapScreenNavigation> {
                             MapScreen()
