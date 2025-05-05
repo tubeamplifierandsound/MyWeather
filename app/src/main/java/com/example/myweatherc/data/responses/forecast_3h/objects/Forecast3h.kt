@@ -4,7 +4,9 @@ import com.example.myweatherc.data.responses.current_weather.objects.Clouds
 import com.example.myweatherc.data.responses.current_weather.objects.Main
 import com.example.myweatherc.data.responses.current_weather.objects.Weather
 import com.example.myweatherc.data.responses.current_weather.objects.Wind
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Forecast3h(
     val clouds: Clouds,
     val dt: Int,

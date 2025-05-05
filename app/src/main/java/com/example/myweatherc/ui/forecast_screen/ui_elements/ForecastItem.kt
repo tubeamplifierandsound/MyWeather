@@ -42,7 +42,8 @@ import com.example.myweatherc.app_settings.SettingsManager.metricsType
 
 
 @Composable
-fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
+fun ForecastItem(
+    forecast: Forecast3h, onClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
@@ -76,7 +77,7 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = remember { formatDateTime(forecast.dt_txt) },
+                        text = remember { formatDateTime(forecast!!.dt_txt!!) },
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(Modifier.height(4.dp))
@@ -90,7 +91,7 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                 // Температура и стрелка
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = String.format("%.1f${metricsType.tempMeasurement}", forecast.main.temp),
+                        text = String.format("%.1f${metricsType.tempMeasurement}", forecast.main!!.temp!!),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Icon(
@@ -110,26 +111,26 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                     WeatherDetailRow(
                         icon = Icons.Default.WaterDrop,
                         title = "Humidity",
-                        value = "${forecast.main.humidity}%"
+                        value = "${forecast.main!!.humidity!!}%"
                     )
                     WeatherDetailRow(
                         icon = Icons.Default.Speed,
                         title = "Pressure",
-                        value = "${forecast.main.pressure} hPa"
+                        value = "${forecast.main!!.pressure!!} hPa"
                     )
                     WeatherDetailRow(
                         icon = Icons.Default.Air,
                         title = "Wind",
-                        value = "${forecast.wind.speed} ${metricsType.windMeasurement}"
+                        value = "${forecast.wind!!.speed!!} ${metricsType.windMeasurement}"
                     )
-//                    Button(
-//                        onClick = onClick,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 8.dp)
-//                    ) {
-//                        Text("Подробный прогноз")
-//                    }
+                    Button(
+                        onClick = onClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    ) {
+                        Text("Detailed forecast")
+                    }
                 }
             }
         }

@@ -61,27 +61,35 @@ fun convertUnixToDateTime(unixTime: Int): String {
 fun HomeScreen(
     geoObject: GeoObject?,
     iconCode: String?,
-    setIconCode: (String) -> Unit
+    setIconCode: (String) -> Unit,
+    forecastData: CurrentWeatherResponse?
 ) {
     val coroutineScope = rememberCoroutineScope()
     var weatherResponse by remember { mutableStateOf<CurrentWeatherResponse?>(null) }
+
 
     var errorText by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(geoObject) {
         if(geoObject != null){
-            coroutineScope.launch {
-                try{
-                    weatherResponse = RetrofitClient.weatherAPIService.getCurrentWeather(
-                        latitude = geoObject.lat,
-                        longitude = geoObject.lon,
-                        apiKey = APISettings.API_KEY
-                    )
-                    val code = weatherResponse!!.weather.firstOrNull()?.icon
-                    if (code != null) setIconCode(code)
-                }
-                catch (e: Exception){
-                    errorText = "Error: ${e.localizedMessage}"
+            if (forecastData != null){
+                weatherResponse = forecastData
+                val code = weatherResponse!!.weather.firstOrNull()?.icon
+                if (code != null) setIconCode(code)
+            }else{
+                coroutineScope.launch {
+                    try{
+                        weatherResponse = RetrofitClient.weatherAPIService.getCurrentWeather(
+                            latitude = geoObject.lat,
+                            longitude = geoObject.lon,
+                            apiKey = APISettings.API_KEY
+                        )
+                        val code = weatherResponse!!.weather.firstOrNull()?.icon
+                        if (code != null) setIconCode(code)
+                    }
+                    catch (e: Exception){
+                        errorText = "Error: ${e.localizedMessage}"
+                    }
                 }
             }
         }
@@ -199,7 +207,7 @@ fun HomeScreen(
                             color = Color.Gray.copy(alpha = 0.5f)
                         )
                         weatherResponse!!.rain?.let {
-                            Text(text = "Rain for 1h: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            Text(text = "Rain: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 thickness = 1.dp,
@@ -207,7 +215,7 @@ fun HomeScreen(
                             )
                         }
                         weatherResponse!!.snow?.let {
-                            Text(text = "Snow for 1h: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            Text(text = "Snow: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 thickness = 1.dp,
