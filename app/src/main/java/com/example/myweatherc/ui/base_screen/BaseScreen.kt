@@ -74,8 +74,11 @@ import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
+import com.example.myweatherc.holders.ForecastHolder
+import com.example.myweatherc.navigation.DetailedHomeScreenNavigation
 import com.example.myweatherc.navigation.GeoCodingScreenNavigation
 import com.example.myweatherc.ui.base_screen.drawer.CustomDrawer
+import com.example.myweatherc.ui.forecast_screen.getWeather
 import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
 
 fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
@@ -263,10 +266,22 @@ fun BaseScreen() {
                         composable<HomeScreenNavigation> {
                             HomeScreen(currentGeoObject.value,
                                 iconCode = iconCode,
-                                setIconCode = { iconCode = it })
+                                setIconCode = { iconCode = it },
+                                null)
                         }
                         composable<ForecastScreenNavigation> {
-                            ForecastScreen(currentGeoObject.value)
+                            ForecastScreen(currentGeoObject.value) {
+                                navController.navigate(DetailedHomeScreenNavigation)
+
+                            }
+                        }
+
+                        composable<DetailedHomeScreenNavigation>{
+                        val obj = getWeather(ForecastHolder.forecast!!.list[ForecastHolder.ind], ForecastHolder.forecast!!)
+                            HomeScreen(currentGeoObject.value,
+                                iconCode = iconCode,
+                                setIconCode = { iconCode = it },
+                                obj)
                         }
                         composable<AirPollutionScreenNavigation> {
                             AirPollutionScreen(currentGeoObject.value)
@@ -283,9 +298,16 @@ fun BaseScreen() {
                         composable<AboutAppScreenNavigation> {
                             AboutAppScreen()
                         }
+
+
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun testFun(){
+
 }
