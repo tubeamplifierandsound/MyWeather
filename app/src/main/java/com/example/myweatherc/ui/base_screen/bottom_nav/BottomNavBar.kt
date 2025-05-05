@@ -7,7 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.NavigationBarItemDefaults
+
 
 @Composable
 fun BottomNavBar(
@@ -25,7 +29,7 @@ fun BottomNavBar(
 
     val selectedItem = remember { mutableStateOf(BottomNavItem.Home.route) }
 
-    NavigationBar {
+    NavigationBar(containerColor = Color.Transparent, tonalElevation = 0.dp ) {
         items.forEach { item ->
             NavigationBarItem(
                 selected = selectedItem.value == item.route,
@@ -44,7 +48,14 @@ fun BottomNavBar(
                         contentDescription = item.title
                     )
                 },
-                label = { Text(text = item.title) }
+                label = { Text(text = item.title) },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.White,           // ← Цвет подложки вокруг активного айтема
+                    selectedIconColor = Color.Black,        // ← Цвет иконки, когда выбрана
+                    selectedTextColor = Color.Gray,        // ← Цвет текста, когда выбран
+                    unselectedIconColor = Color.Gray,       // ← Цвет иконки, когда не выбран
+                    unselectedTextColor = Color.Gray        // ← Цвет текста, когда не выбран
+                )
             )
         }
     }

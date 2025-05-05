@@ -1,5 +1,5 @@
 package com.example.myweatherc.ui.base_screen
- 
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -7,6 +7,7 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
@@ -67,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil3.request.crossfade
+import com.example.myweatherc.R
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
@@ -98,6 +101,8 @@ fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
 @Composable
 fun BaseScreen() {
     val coroutineScope = rememberCoroutineScope()
+
+    var iconCode by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
     var errorText by remember { mutableStateOf<String?>(null) }
@@ -162,20 +167,27 @@ fun BaseScreen() {
         fontWeight = FontWeight.Medium,
         fontFamily = FontFamily.Serif
     )
- 
+
+
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data("https://i.pinimg.com/736x/90/36/6b/90366b5f05c0c6cf57472d463a18d1d3.jpg")
-                .crossfade(true)
-                .build(),
-            contentDescription = "App Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
- 
+        val resourceId = remember(iconCode) {
+            iconCode?.let {
+                val resourceName = "back_${it.lowercase()}"
+                context.resources.getIdentifier(resourceName, "drawable", context.packageName)
+            }
+        }
+        if (resourceId != null && resourceId != 0) {
+            Image(
+                painter = painterResource(id = resourceId),
+                contentDescription = "App Background",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             modifier = Modifier.fillMaxWidth(),
@@ -254,7 +266,9 @@ fun BaseScreen() {
                         modifier = Modifier.background(Color.Transparent)
                     ) {
                         composable<HomeScreenNavigation> {
-                            HomeScreen(currentGeoObject.value)
+                            HomeScreen(currentGeoObject.value,
+                                iconCode = iconCode,
+                                setIconCode = { iconCode = it })
                         }
                         composable<ForecastScreenNavigation> {
                             ForecastScreen(currentGeoObject.value)
