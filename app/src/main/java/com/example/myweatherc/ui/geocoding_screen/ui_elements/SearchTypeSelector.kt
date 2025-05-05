@@ -8,12 +8,14 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.example.myweatherc.ui.geocoding_screen.SearchType
 
 
@@ -34,11 +36,19 @@ fun SearchTypeSelector(
             readOnly = true,
             value = selectedType.name.replace("_", " "),
             onValueChange = {},
-            label = { Text("Search by") },
+            label = { Text("Search by", color = Color.DarkGray) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.LightGray,
+                focusedIndicatorColor = Color.Gray,
+                unfocusedIndicatorColor = Color.DarkGray
+        )
         )
 
         ExposedDropdownMenu(

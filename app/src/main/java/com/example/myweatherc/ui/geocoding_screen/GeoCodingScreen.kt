@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -136,7 +137,13 @@ fun GeoCodingScreen(
                 }
             },
             enabled = isSearchEnabled && !isLoading,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.DarkGray,
+                contentColor = Color.White,
+                disabledContainerColor = Color.LightGray.copy(alpha = 0.5f), // Для disabled состояния
+                disabledContentColor = Color.White.copy(alpha = 0.7f)
+            )
         ) {
             Text(if (isLoading) "Searching..." else "Search")
         }
@@ -152,7 +159,8 @@ fun GeoCodingScreen(
         if (geoObjects.isNotEmpty()) {
             Text(
                 text = "Found ${geoObjects.size} results:",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.LightGray
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
