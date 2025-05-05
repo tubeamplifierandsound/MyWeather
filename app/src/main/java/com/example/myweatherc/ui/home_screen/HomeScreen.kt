@@ -53,13 +53,15 @@ fun convertUnixToDateTime(unixTime: Int): String {
 
 @Composable
 fun HomeScreen(
-    geoObject: GeoObject?
+    geoObject: GeoObject?,
+    iconCode: String?,
+    setIconCode: (String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var weatherResponse by remember { mutableStateOf<CurrentWeatherResponse?>(null) }
 
     var errorText by remember { mutableStateOf<String?>(null) }
-    
+
     LaunchedEffect(geoObject) {
         if(geoObject != null){
             coroutineScope.launch {
@@ -69,6 +71,8 @@ fun HomeScreen(
                         longitude = geoObject.lon,
                         apiKey = APISettings.API_KEY
                     )
+                    val code = weatherResponse!!.weather.firstOrNull()?.icon
+                    if (code != null) setIconCode(code)
                 }
                 catch (e: Exception){
                     errorText = "Error: ${e.localizedMessage}"
