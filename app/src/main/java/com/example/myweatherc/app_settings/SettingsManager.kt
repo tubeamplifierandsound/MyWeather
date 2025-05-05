@@ -28,7 +28,6 @@ object SettingsManager {
     }
 
     fun loadMetricType() {
-        // DEFAULT_METRICS - значение по умолчанию
         val name = preferences.getString("metrics_type", DEFAULT_METRICS.name)
         metricsType = Metrics.valueOf(name ?: Metrics.METRIC.name)
     }

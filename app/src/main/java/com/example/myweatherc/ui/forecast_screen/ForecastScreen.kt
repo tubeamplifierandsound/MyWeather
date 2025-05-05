@@ -64,7 +64,6 @@ fun ForecastScreen(
     var forecastData by remember{mutableStateOf<WeatherForecastResponse?>(null) }
     var errorText by remember { mutableStateOf<String?>(null) }
     var outputItemsNum by rememberSaveable {mutableStateOf(ForcastType.DAYS.maxDuration) }
-    // Состояния для управления UI
     var setMode by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf(ForcastType.DAYS) }
 
@@ -97,7 +96,6 @@ fun ForecastScreen(
                 .weight(1f)
                 .fillMaxWidth()
             ) {
-               // HomeScreen(null)
             }
 
             Button(
@@ -112,7 +110,6 @@ fun ForecastScreen(
     }
     else{
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            // Кнопка открытия панели управления
             Button(
                 onClick = { setMode = !setMode },
                 modifier = Modifier.fillMaxWidth(),
@@ -123,21 +120,18 @@ fun ForecastScreen(
                 Text("Configure forecast parameters")
             }
 
-            // Выпадающая панель
             if (setMode) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-                    // Выбор типа прогноза
                     ForecastTypeSelector(
                         selectedType = selectedType,
                         onTypeSelected = { newType ->
                             selectedType = newType
                         })
 
-                    // Поле ввода числа
                     OutlinedTextField(
                         value = inputValue,
                         onValueChange = { newValue ->
@@ -193,8 +187,8 @@ fun ForecastScreen(
                         },
                         modifier = Modifier.padding(top = 8.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.DarkGray, // Цвет фона
-                        contentColor = Color.LightGray)  // Цвет текста
+                                containerColor = Color.DarkGray,
+                        contentColor = Color.LightGray)
                     ) {
                         Text("Apply")
                     }
@@ -203,7 +197,6 @@ fun ForecastScreen(
 
 
 
-            // Отображение данных или состояния загрузки
             when {
                 errorText != null -> {
                     Text(
@@ -216,6 +209,7 @@ fun ForecastScreen(
                 forecastData != null -> {
                     val data = forecastData!!
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
+
                         itemsIndexed(filteredList) { index, forecast ->
                             ForecastItem(
                                 forecast = forecast,
@@ -224,6 +218,7 @@ fun ForecastScreen(
                                     ForecastHolder.ind = index * selectedType.haveTimestampts
                                     onForecastItemClick()
                                     detailedWeather = true;
+
                                   //  currentWeatherData = getWeather(forecast, geoObject, data)
                                     // Переход на детальный экран
                                     //ForecastItemDrawer(getWeather(forecast, geoObject, data))
@@ -252,7 +247,6 @@ fun getWeather(forcast3h: Forecast3h, forcastMain: WeatherForecastResponse): Cur
         id = forcastMain.city.id,
         main = forcast3h.main,
         name = forcastMain.city.name,
-        // данные за 3 часа => в 1 час
         rain = forcast3h.rain?.let { Rain1h(it.`3h` / 3) },
         snow = forcast3h.snow?.let { Snow1h(it.`3h` / 3) },
         sys = Sys(

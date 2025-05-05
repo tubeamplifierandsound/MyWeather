@@ -36,7 +36,6 @@ fun GeoInfo(
     onItemSelected: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    // Форматирование координат: абсолютное значение + направление
     val latText = formatCoordinate(geoObject.lat, isLatitude = true, isExpanded)
     val lonText = formatCoordinate(geoObject.lon, isLatitude = false,  isExpanded)
 
@@ -46,7 +45,6 @@ fun GeoInfo(
             .padding(vertical = 4.dp1)
             .clickable(onClick = onItemSelected),
         elevation = CardDefaults.cardElevation(
-            // Для изменения приподнятости при нажатии
             defaultElevation = 2.dp1,
             pressedElevation = 4.dp1
         )
@@ -64,7 +62,6 @@ fun GeoInfo(
     }
 }
 
-// Форматирование координат
 private fun formatCoordinate(value: Double, isLatitude: Boolean, isExpanded: Boolean): String {
     val direction = if (isLatitude) {
         if (value >= 0) "N" else "S"

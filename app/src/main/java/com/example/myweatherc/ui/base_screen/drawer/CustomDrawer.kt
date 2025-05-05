@@ -40,21 +40,6 @@ fun CustomDrawer(
 
     }
 
-//    Column(
-//        Modifier
-//            .fillMaxWidth()
-//            .height(170.dp)
-//            .background(Color.Black.copy(alpha = 0.7f)),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        Image(
-//            modifier = Modifier.size(200.dp),
-//            painter = painterResource(id = R.drawable.logo),
-//            contentDescription = ""
-//        )
-//    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
