@@ -53,10 +53,13 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherc.data.responses.forecast_3h.objects.Forecast3h
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import com.example.myweatherc.data.responses.current_weather.CurrentWeatherResponse
 import com.example.myweatherc.data.responses.current_weather.objects.Coord
@@ -139,7 +142,10 @@ fun ForecastScreen(
             // Кнопка открытия панели управления
             Button(
                 onClick = { setMode = !setMode },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.DarkGray,
+                    contentColor = Color.White)
             ) {
                 Text("Configure forecast parameters")
             }
@@ -166,10 +172,16 @@ fun ForecastScreen(
                             inputError = newValue.isBlank() || newValue.toIntOrNull() == null
                             inputError = false
                         },
-                        label = { Text("Forecast duration (${selectedType.name.substringBefore('_').lowercase()})") },
+                        label = { Text("Forecast duration (${selectedType.name.substringBefore('_').lowercase()})", color = Color.LightGray) },
                         isError = inputError,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.LightGray,
+                            unfocusedTextColor = Color.LightGray,
+                            focusedBorderColor = Color.LightGray,
+                            unfocusedBorderColor = Color.Gray,
+                        )
                     )
 
                     Button(
@@ -206,7 +218,10 @@ fun ForecastScreen(
                                 }
                             }
                         },
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.DarkGray, // Цвет фона
+                        contentColor = Color.LightGray)  // Цвет текста
                     ) {
                         Text("Apply")
                     }

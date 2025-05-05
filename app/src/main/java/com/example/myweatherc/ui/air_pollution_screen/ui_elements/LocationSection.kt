@@ -12,27 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.myweatherc.data.responses.geocoding.GeoObject
+import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
 
 @Composable
 fun LocationSection(geoObject: GeoObject) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = geoObject.name,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(geoObject.country)
-            geoObject.state?.let { Text(it) }
-            Text(
-                text = "(${"%.4f".format(geoObject.lat)}, ${"%.4f".format(geoObject.lon)})",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+    if (geoObject!=null) {
+        GeoInfo(geoObject,
+            isExpanded = false
+        )
     }
 }
