@@ -52,7 +52,7 @@ import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
 fun convertUnixToDateTime(unixTime: Int): String {
     val instant = Instant.ofEpochSecond(unixTime.toLong())
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        .withZone(ZoneId.systemDefault()) // для UTC
+        .withZone(ZoneId.systemDefault())
 
     return formatter.format(instant)
 }

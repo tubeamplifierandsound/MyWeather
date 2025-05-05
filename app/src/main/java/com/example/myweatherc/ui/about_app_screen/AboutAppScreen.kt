@@ -46,7 +46,6 @@ fun AboutAppScreen() {
                 .padding(6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = "About Icon",
@@ -65,7 +64,6 @@ fun AboutAppScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Основной текст
             Text(
                 buildAnnotatedString {
                     append("MyWeather is a modern application for viewing current weather, forecasts and air quality.")
@@ -88,7 +86,6 @@ fun AboutAppScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Информация об API и версии
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -141,7 +141,7 @@ fun GeoCodingScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.DarkGray,
                 contentColor = Color.White,
-                disabledContainerColor = Color.LightGray.copy(alpha = 0.5f), // Для disabled состояния
+                disabledContainerColor = Color.LightGray.copy(alpha = 0.5f),
                 disabledContentColor = Color.White.copy(alpha = 0.7f)
             )
         ) {

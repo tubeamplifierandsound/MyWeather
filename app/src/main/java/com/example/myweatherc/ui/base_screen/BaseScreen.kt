@@ -110,7 +110,6 @@ fun BaseScreen() {
     var location by remember { mutableStateOf<Location?>(null) }
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
-    // Проверка и запрос разрешений
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -122,7 +121,6 @@ fun BaseScreen() {
         }
     }
 
-    // Проверка разрешений при первом запуске
     LaunchedEffect(Unit) {
         val permissionCheckResult = ContextCompat.checkSelfPermission(
             context,
@@ -142,7 +140,6 @@ fun BaseScreen() {
 
     val currentGeoObject = remember { mutableStateOf<GeoObject?>(null) }
 
-    // Запрос погоды с учетом местоположения
     LaunchedEffect(location) {
         coroutineScope.launch {
             try {
@@ -217,16 +214,6 @@ fun BaseScreen() {
                         }
                     )
 
-//                    Text(
-//                        "Настройки",
-//                        modifier = Modifier
-//                            .clickable {
-//                                coroutineScope.launch { drawerState.close() }
-//                                navController.navigate(SettingsScreenNavigation)
-//                            }
-//                            .padding(top = 86.dp, start = 16.dp),
-//                        style = textStyle.copy(color = Color.White)
-//                    )
                 }
             }
         ) {

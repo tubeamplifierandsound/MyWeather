@@ -89,7 +89,6 @@ fun SettingsScreen(
                                 },
                                 onClick = {
                                     SettingsManager.saveMetricType(metric)
-                                    //selectedMetric = option
                                     expanded = false
                                 }
                             )

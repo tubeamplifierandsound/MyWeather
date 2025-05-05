@@ -87,7 +87,6 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                     )
                 }
 
-                // Температура и стрелка
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = String.format("%.1f${metricsType.measurement}", forecast.main.temp),
@@ -103,7 +102,6 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                 }
             }
 
-            // Дополнительная информация (появляется при раскрытии)
             if (expanded) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Column {
@@ -122,14 +120,6 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
                         title = "Wind",
                         value = "${forecast.wind.speed} m/s"
                     )
-//                    Button(
-//                        onClick = onClick,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 8.dp)
-//                    ) {
-//                        Text("Подробный прогноз")
-//                    }
                 }
             }
         }
@@ -163,7 +153,6 @@ fun WeatherDetailRow(icon: ImageVector, title: String, value: String) {
     }
 }
 
-// Форматирование даты и времени
 private fun formatDateTime(dateTimeString: String): String {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val dateTime = LocalDateTime.parse(dateTimeString, formatter)
