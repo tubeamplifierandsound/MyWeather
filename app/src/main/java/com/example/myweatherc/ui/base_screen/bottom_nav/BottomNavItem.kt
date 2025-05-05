@@ -25,7 +25,7 @@ sealed class BottomNavItem(
     )
     data object GeoCoding: BottomNavItem(
         route = "GeoCodingScreenNavigation",
-        title = "geo coding",
+        title = "Geo Coding",
         iconId = R.drawable.ic_geo
     )
 }

@@ -71,6 +71,7 @@ import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.navigation.GeoCodingScreenNavigation
+import com.example.myweatherc.ui.base_screen.drawer.CustomDrawer
 import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
 
 fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
@@ -185,36 +186,27 @@ fun BaseScreen() {
                         .fillMaxWidth(0.55f)
                         .background(Color.Black.copy(alpha = 0.7f))
                 ) {
-                    Text(
-                        "Настройки",
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch { drawerState.close() }
-                                navController.navigate(SettingsScreenNavigation)
+                    CustomDrawer(
+                        onCategoryClick ={ item: String ->
+                            when(item){
+                                "Настройки" -> navController.navigate(SettingsScreenNavigation)
+                                "Карты" -> navController.navigate(MapScreenNavigation)
+                                "О приложении" -> navController.navigate(AboutAppScreenNavigation)
                             }
-                            .padding(top = 86.dp, start = 16.dp),
-                        style = textStyle.copy(color = Color.White)
+                            coroutineScope.launch { drawerState.close() }
+                        }
                     )
-                    Text(
-                        "Карты",
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch { drawerState.close() }
-                                navController.navigate(MapScreenNavigation)
-                            }
-                            .padding(top = 16.dp, start = 16.dp),
-                        style = textStyle.copy(color = Color.White)
-                    )
-                    Text(
-                        "О приложении",
-                        modifier = Modifier
-                            .clickable {
-                                coroutineScope.launch { drawerState.close() }
-                                navController.navigate(AboutAppScreenNavigation)
-                            }
-                            .padding(top = 16.dp, start = 16.dp),
-                        style = textStyle.copy(color = Color.White)
-                    )
+
+//                    Text(
+//                        "Настройки",
+//                        modifier = Modifier
+//                            .clickable {
+//                                coroutineScope.launch { drawerState.close() }
+//                                navController.navigate(SettingsScreenNavigation)
+//                            }
+//                            .padding(top = 86.dp, start = 16.dp),
+//                        style = textStyle.copy(color = Color.White)
+//                    )
                 }
             }
         ) {
