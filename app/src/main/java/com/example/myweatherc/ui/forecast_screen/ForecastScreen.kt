@@ -81,6 +81,9 @@ enum class ForcastType(val label: String, val haveTimestampts: Int, val maxDurat
 fun ForecastScreen(
     geoObject: GeoObject?
 ) {
+    var detailedWeather by remember { mutableStateOf(false) }
+    var currentWeatherData by remember { mutableStateOf<CurrentWeatherResponse?>(null)}
+
     val coroutineScope = rememberCoroutineScope()
     var forecastData by remember{mutableStateOf<WeatherForecastResponse?>(null) }
     var errorText by remember { mutableStateOf<String?>(null) }
@@ -112,116 +115,140 @@ fun ForecastScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Кнопка открытия панели управления
-        Button(
-            onClick = { setMode = !setMode },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Configure forecast parameters")
-        }
+    if(detailedWeather){
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+            ) {
+               // HomeScreen(null)
+            }
 
-        // Выпадающая панель
-        if (setMode) {
-            Column(
+            Button(
+                onClick = { detailedWeather = false},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(16.dp)
             ) {
-                // Выбор типа прогноза
-                ForecastTypeSelector(
-                    selectedType = selectedType,
-                    onTypeSelected = { newType ->
-                        selectedType = newType
-                    })
-
-                // Поле ввода числа
-                OutlinedTextField(
-                    value = inputValue,
-                    onValueChange = { newValue ->
-                        inputValue = newValue
-                        inputError = newValue.isBlank() || newValue.toIntOrNull() == null
-                        inputError = false
-                    },
-                    label = { Text("Forecast duration (${selectedType.name.substringBefore('_').lowercase()})") },
-                    isError = inputError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Button(
-                    onClick = {
-                        when {
-                            inputValue.isEmpty() -> {
-                                inputError = true
-                                errorText = "Enter something..."
-                            }
-                            inputValue.toIntOrNull() == null -> {
-                                inputError = true
-                                errorText = "The value must be numeric"
-                            }
-                            inputValue.toInt() > selectedType.maxDuration || inputValue.toInt() < 0  -> {
-                                inputError = true
-                                errorText = "The number should be positive and not more than ${selectedType.maxDuration}" //?
-                            }
-                            else -> {
-                                val inpVal = inputValue.toInt()
-                                outputItemsNum = when (selectedType){
-                                    ForcastType.HOURS_3 -> {
-                                        var res: Int = inpVal / 3
-                                        val remainder = inpVal % 3
-                                        if(remainder != 0){
-                                            res++
-                                        }
-                                        res
-                                    }
-                                    ForcastType.DAYS -> inpVal
-
-                                }
-                                setMode = false
-                                errorText = null
-                            }
-                        }
-                    },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text("Apply")
-                }
+                Text("Back")
             }
         }
-
-
-
-        // Отображение данных или состояния загрузки
-        when {
-            errorText != null -> {
-                Text(
-                    text = errorText!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
-                )
+    }
+    else{
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            // Кнопка открытия панели управления
+            Button(
+                onClick = { setMode = !setMode },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Configure forecast parameters")
             }
 
-            forecastData != null -> {
-                val data = forecastData!!
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    //Log.d("forecast", forecastData!!.list.size.toString())
-                    items(filteredList) { forecast ->
-                        ForecastItem(
-                            forecast = forecast,
-                            onClick = {
-                                // Переход на детальный экран
-                                //ForecastItemDrawer(getWeather(forecast, geoObject, data))
+            // Выпадающая панель
+            if (setMode) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    // Выбор типа прогноза
+                    ForecastTypeSelector(
+                        selectedType = selectedType,
+                        onTypeSelected = { newType ->
+                            selectedType = newType
+                        })
+
+                    // Поле ввода числа
+                    OutlinedTextField(
+                        value = inputValue,
+                        onValueChange = { newValue ->
+                            inputValue = newValue
+                            inputError = newValue.isBlank() || newValue.toIntOrNull() == null
+                            inputError = false
+                        },
+                        label = { Text("Forecast duration (${selectedType.name.substringBefore('_').lowercase()})") },
+                        isError = inputError,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        onClick = {
+                            when {
+                                inputValue.isEmpty() -> {
+                                    inputError = true
+                                    errorText = "Enter something..."
+                                }
+                                inputValue.toIntOrNull() == null -> {
+                                    inputError = true
+                                    errorText = "The value must be numeric"
+                                }
+                                inputValue.toInt() > selectedType.maxDuration || inputValue.toInt() < 0  -> {
+                                    inputError = true
+                                    errorText = "The number should be positive and not more than ${selectedType.maxDuration}" //?
+                                }
+                                else -> {
+                                    val inpVal = inputValue.toInt()
+                                    outputItemsNum = when (selectedType){
+                                        ForcastType.HOURS_3 -> {
+                                            var res: Int = inpVal / 3
+                                            val remainder = inpVal % 3
+                                            if(remainder != 0){
+                                                res++
+                                            }
+                                            res
+                                        }
+                                        ForcastType.DAYS -> inpVal
+
+                                    }
+                                    setMode = false
+                                    errorText = null
+                                }
                             }
-                        )
+                        },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Apply")
                     }
                 }
             }
 
-            else -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+
+            // Отображение данных или состояния загрузки
+            when {
+                errorText != null -> {
+                    Text(
+                        text = errorText!!,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+
+                forecastData != null -> {
+                    val data = forecastData!!
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        //Log.d("forecast", forecastData!!.list.size.toString())
+                        items(filteredList) { forecast ->
+                            ForecastItem(
+                                forecast = forecast,
+                                onClick = {
+                                    detailedWeather = true;
+                                    currentWeatherData = getWeather(forecast, geoObject, data)
+                                    // Переход на детальный экран
+                                    //ForecastItemDrawer(getWeather(forecast, geoObject, data))
+                                }
+                            )
+                        }
+                    }
+                }
+
+                else -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
             }
-        }
+    }
+
 
 
     }

@@ -1,0 +1,90 @@
+package com.example.myweatherc.ui.base_screen.geo_item
+
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import com.example.myweatherc.data.responses.geocoding.GeoObject
+import java.util.Locale
+import kotlin.math.abs
+import androidx.compose.ui.unit.dp as dp1
+
+@Composable
+fun GeoInfo(
+    geoObject: GeoObject,
+    isExpanded: Boolean = false,
+    onItemSelected: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    // Форматирование координат: абсолютное значение + направление
+    val latText = formatCoordinate(geoObject.lat, isLatitude = true, isExpanded)
+    val lonText = formatCoordinate(geoObject.lon, isLatitude = false,  isExpanded)
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp1)
+            .clickable(onClick = onItemSelected),
+        elevation = CardDefaults.cardElevation(
+            // Для изменения приподнятости при нажатии
+            defaultElevation = 2.dp1,
+            pressedElevation = 4.dp1
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp1)
+                .animateContentSize()
+        ) {
+            GeoExpandInfo(geoObject, latText, lonText)
+            if (isExpanded) {
+                ExpandInfo(geoObject)
+            }
+        }
+    }
+}
+
+// Форматирование координат
+private fun formatCoordinate(value: Double, isLatitude: Boolean, isExpanded: Boolean): String {
+    val direction = if (isLatitude) {
+        if (value >= 0) "N" else "S"
+    } else {
+        if (value >= 0) "E" else "W"
+    }
+    if(isExpanded){
+        return String.format(
+            Locale.getDefault(),
+            "%f° %s",
+            abs(value),
+            direction
+        )
+    }else{
+        return String.format(
+            Locale.getDefault(),
+            "%.2f° %s",
+            abs(value),
+            direction
+        )
+    }
+
+}

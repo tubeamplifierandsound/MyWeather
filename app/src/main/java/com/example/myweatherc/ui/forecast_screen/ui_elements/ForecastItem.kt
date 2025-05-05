@@ -53,17 +53,15 @@ fun ForecastItem(forecast: Forecast3h, onClick: () -> Unit) {
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { expanded = !expanded }
-            .animateContentSize(), // Анимация изменения размера
+            .animateContentSize(),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Основная информация
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Иконка погоды
                 val icon = forecast.weather.firstOrNull()?.icon
                 if (icon != null) {
                     AsyncImage(

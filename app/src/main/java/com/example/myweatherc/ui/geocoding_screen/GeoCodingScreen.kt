@@ -24,10 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
-import com.example.myweatherc.navigation.GeoCodingScreenNavigation
 import kotlinx.coroutines.launch
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.CoordinateInputs
-import com.example.myweatherc.ui.geocoding_screen.ui_elements.GeoObjectItem
+import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SearchTypeSelector
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SingleInputField
 
@@ -160,9 +159,15 @@ fun GeoCodingScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(geoObjects) { it ->
-                    GeoObjectItem(geoObject = it) {
-                        geoObject.value = it
-                    }
+//                    GeoObjectItem(geoObject = it) {
+//                        geoObject.value = it
+//                    }
+                    GeoInfo(geoObject = it,
+                        isExpanded = true,
+                        onItemSelected = {
+                            geoObject.value = it
+                        }
+                        )
                 }
             }
         }
