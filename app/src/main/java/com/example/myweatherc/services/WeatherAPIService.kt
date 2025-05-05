@@ -1,5 +1,6 @@
 package com.example.myweatherc.services
 
+import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.data.responses.air_pollution.AirPollutionResponse
 import com.example.myweatherc.data.responses.current_weather.CurrentWeatherResponse
 import com.example.myweatherc.data.responses.forecast_3h.WeatherForecastResponse
@@ -13,7 +14,7 @@ interface WeatherAPIService {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("appid") apiKey: String,
-        @Query("units") units: String = "metric",
+        @Query("units") units: String = SettingsManager.metricsType.name.lowercase(),
         @Query("lang") language: String = "en"
     ) : CurrentWeatherResponse
 
@@ -23,7 +24,7 @@ interface WeatherAPIService {
         @Query("lon") longitude: Double,
         @Query("appid") apiKey: String,
         @Query("cnt") timestampsNumber: Int,
-        @Query("units") units: String = "metric",
+        @Query("units") units: String = SettingsManager.metricsType.name.lowercase(),
         @Query("lang") language: String = "en"
     ) : WeatherForecastResponse
 

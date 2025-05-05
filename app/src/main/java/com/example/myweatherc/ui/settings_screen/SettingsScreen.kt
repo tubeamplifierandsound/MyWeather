@@ -19,17 +19,21 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myweatherc.app_settings.Metrics
+import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.navigation.SettingsScreenNavigation
+import com.example.myweatherc.ui.forecast_screen.ForcastType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedMetric by remember { mutableStateOf("Метрическая система") }
+//    var selectedMetric by remember { mutableStateOf(Metrics.METRIC) }
     var detectLocation by remember { mutableStateOf(true) }
 
-    val metricsOptions = listOf("Метрическая система", "Стандартная")
+    val metrics  = Metrics.values();
+    //val metricsOptions = listOf("Метрическая система", "Стандартная")
 
     Column(
         modifier = Modifier
@@ -60,7 +64,7 @@ fun SettingsScreen(
                             .fillMaxWidth()
                             .menuAnchor(),
                         readOnly = true,
-                        value = selectedMetric,
+                        value = SettingsManager.metricsType.label,
                         onValueChange = {},
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
@@ -71,16 +75,17 @@ fun SettingsScreen(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        metricsOptions.forEach { option ->
+                        Metrics.values().forEach { metric ->
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        text = option,
+                                        text = metric.label,
                                         color = Color.DarkGray
                                     )
                                 },
                                 onClick = {
-                                    selectedMetric = option
+                                    SettingsManager.saveMetricType(metric)
+                                    //selectedMetric = option
                                     expanded = false
                                 }
                             )
@@ -95,8 +100,10 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Checkbox(
-                        checked = detectLocation,
-                        onCheckedChange = { detectLocation = it },
+                        checked = SettingsManager.detectLocation,
+                        onCheckedChange = { newVal ->
+                            SettingsManager.saveDetectLocation(newVal)
+                            detectLocation = newVal },
                         colors = CheckboxDefaults.colors(
                             checkedColor = Color.Gray,
                             uncheckedColor = Color.LightGray
@@ -104,7 +111,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Определять текущее местоположение",
+                        text = "Determine current location",
                         color = Color.DarkGray,
                         fontSize = 16.sp
                     )
