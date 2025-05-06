@@ -51,6 +51,9 @@ fun GeoCodingScreen(
     var geoObjects by remember { mutableStateOf<List<GeoObject>>(emptyList()) }
     val scope = rememberCoroutineScope()
 
+    var latitudeDir by remember { mutableStateOf("N") } //?
+    var longitudeDir by remember { mutableStateOf("E") } //?
+
     LaunchedEffect(selectedSearchType) {
         latitude = ""
         longitude = ""
@@ -72,6 +75,7 @@ fun GeoCodingScreen(
 
         when (selectedSearchType) {
             SearchType.COORDINATES -> {
+
                 CoordinateInputs(
                     lat = latitude,
                     onLatChange = { latitude = it },

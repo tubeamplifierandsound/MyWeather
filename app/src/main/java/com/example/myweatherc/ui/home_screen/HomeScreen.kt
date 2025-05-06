@@ -208,7 +208,8 @@ fun HomeScreen(
                             color = Color.Gray.copy(alpha = 0.5f)
                         )
                         weatherResponse!!.rain?.let {
-                            Text(text = "Rain: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            //Text(text = "Rain: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            Text(text = "Rain: %.2f mm".format(it.`1h`), color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 thickness = 1.dp,
@@ -216,15 +217,15 @@ fun HomeScreen(
                             )
                         }
                         weatherResponse!!.snow?.let {
-                            Text(text = "Snow: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            Text(text = "Snow: %.2f mm".format(it.`1h`), color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
                                 thickness = 1.dp,
                                 color = Color.Gray.copy(alpha = 0.5f)
                             )
                         }
-                        Text(text = "Min temperature at the moment: ${weatherResponse!!.main.temp_min}°C", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
-                        Text(text = "Max temperature at the moment: ${weatherResponse!!.main.temp_max}°C", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = "Min temperature at the moment: ${weatherResponse!!.main.temp_min}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = "Max temperature at the moment: ${weatherResponse!!.main.temp_max}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 4.dp),
                             thickness = 1.dp,

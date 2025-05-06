@@ -90,25 +90,7 @@ fun ForecastScreen(
         }
     }
 
-    if(detailedWeather){
-        Column(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-            ) {
-            }
 
-            Button(
-                onClick = { detailedWeather = false},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Back")
-            }
-        }
-    }
-    else{
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Button(
                 onClick = { setMode = !setMode },
@@ -217,7 +199,7 @@ fun ForecastScreen(
                                     ForecastHolder.forecast = forecastData
                                     ForecastHolder.ind = index * selectedType.haveTimestampts
                                     onForecastItemClick()
-                                    detailedWeather = true;
+                                   // detailedWeather = true;
 
                                   //  currentWeatherData = getWeather(forecast, geoObject, data)
                                     // Переход на детальный экран
@@ -232,10 +214,6 @@ fun ForecastScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
             }
-    }
-
-
-
     }
 }
 

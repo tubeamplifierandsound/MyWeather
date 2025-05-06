@@ -168,6 +168,6 @@ private fun formatDateTime(dateTimeString: String): String {
     val dateTime = LocalDateTime.parse(dateTimeString, formatter)
     return dateTime.format(
         DateTimeFormatter.ofPattern("HH:mm, EEE dd.MM")
-            .withLocale(Locale.forLanguageTag("ru"))
+            .withLocale(Locale.forLanguageTag("en"))
     )
 }
