@@ -30,6 +30,7 @@ import com.example.myweatherc.ui.geocoding_screen.ui_elements.CoordinateInputs
 import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SearchTypeSelector
 import com.example.myweatherc.ui.geocoding_screen.ui_elements.SingleInputField
+import com.example.myweatherc.ui.geocoding_screen.ui_elements.parseCoordinate
 
 enum class SearchType {
     COORDINATES,
@@ -44,6 +45,10 @@ fun GeoCodingScreen(
     var selectedSearchType by remember { mutableStateOf(SearchType.NAME) }
     var latitude by remember { mutableStateOf("") }
     var longitude by remember { mutableStateOf("") }
+
+    var latitudeStr by remember { mutableStateOf("") }
+    var longitudeStr by remember { mutableStateOf("") }
+
     var zipCode by remember { mutableStateOf("") }
     var cityName by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -51,8 +56,8 @@ fun GeoCodingScreen(
     var geoObjects by remember { mutableStateOf<List<GeoObject>>(emptyList()) }
     val scope = rememberCoroutineScope()
 
-    var latitudeDir by remember { mutableStateOf("N") } //?
-    var longitudeDir by remember { mutableStateOf("E") } //?
+    var latDirection by remember { mutableStateOf("N") }
+    var lonDirection by remember { mutableStateOf("E") }
 
     LaunchedEffect(selectedSearchType) {
         latitude = ""
@@ -76,12 +81,21 @@ fun GeoCodingScreen(
         when (selectedSearchType) {
             SearchType.COORDINATES -> {
 
+
+
                 CoordinateInputs(
-                    lat = latitude,
-                    onLatChange = { latitude = it },
-                    lon = longitude,
-                    onLonChange = { longitude = it }
+                    lat = latitudeStr,
+                    onLatChange = {
+                        latitudeStr = it
+                                  },
+                    lon = longitudeStr,
+                    onLonChange = { longitudeStr = it },
+                    latDirection = latDirection,
+                    onLatDirectionChange = { latDirection = it },
+                    lonDirection = lonDirection,
+                    onLonDirectionChange = { lonDirection = it }
                 )
+
             }
 
             SearchType.ZIP_CODE -> {
@@ -102,13 +116,15 @@ fun GeoCodingScreen(
         }
 
         val isSearchEnabled = when (selectedSearchType) {
-            SearchType.COORDINATES -> latitude.isValidDouble() && longitude.isValidDouble()
+            SearchType.COORDINATES -> latitudeStr.isValidDouble() && longitudeStr.isValidDouble()
             SearchType.ZIP_CODE -> zipCode.isNotBlank()
             SearchType.NAME -> cityName.isNotBlank()
         }
 
         Button(
             onClick = {
+                latitude = parseCoordinate(latitudeStr, latDirection).toString()
+                longitude = parseCoordinate(longitudeStr, lonDirection).toString()
                 scope.launch {
                     isLoading = true
                     errorMessage = null
