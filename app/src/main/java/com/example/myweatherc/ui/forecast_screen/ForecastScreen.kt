@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.example.myweatherc.data.responses.forecast_3h.objects.Forecast3h
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -70,12 +71,18 @@ fun ForecastScreen(
     var inputValue by remember { mutableStateOf("${outputItemsNum}") }
     var inputError by remember { mutableStateOf(false) }
 
+    val listState = rememberLazyListState()
+
     val filteredList = remember(forecastData, outputItemsNum) {
         forecastData?.list?.let { originalList ->
             originalList
                 .filterIndexed { index, _ -> index % selectedType.haveTimestampts == 0 }
                 .take(outputItemsNum)
         } ?: emptyList()
+    }
+
+    LaunchedEffect(filteredList) {
+        listState.scrollToItem(0)
     }
 
     LaunchedEffect(outputItemsNum, geoObject) {
@@ -146,7 +153,7 @@ fun ForecastScreen(
                                 }
                                 inputValue.toInt() > selectedType.maxDuration || inputValue.toInt() < 0  -> {
                                     inputError = true
-                                    errorText = "The number should be positive and not more than ${selectedType.maxDuration}" //?
+                                    errorText = "The number should be positive and not more than ${selectedType.maxDuration}"
                                 }
                                 else -> {
                                     val inpVal = inputValue.toInt()
@@ -176,9 +183,6 @@ fun ForecastScreen(
                     }
                 }
             }
-
-
-
             when {
                 errorText != null -> {
                     Text(
@@ -187,56 +191,29 @@ fun ForecastScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-
                 forecastData != null -> {
                     val data = forecastData!!
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize()) {
 
-                        itemsIndexed(filteredList) { index, forecast ->
+                        items(items = filteredList,
+                            key = { forecast -> forecast.dt }
+                        ) { forecast ->
                             ForecastItem(
                                 forecast = forecast,
                                 onClick = {
-                                    ForecastHolder.forecast = forecastData
-                                    ForecastHolder.ind = index * selectedType.haveTimestampts
+                                    ForecastHolder.forecast = forecast
                                     onForecastItemClick()
-                                   // detailedWeather = true;
-
-                                  //  currentWeatherData = getWeather(forecast, geoObject, data)
-                                    // Переход на детальный экран
-                                    //ForecastItemDrawer(getWeather(forecast, geoObject, data))
                                 }
                             )
                         }
                     }
                 }
-
                 else -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
             }
     }
-}
-
-fun getWeather(forcast3h: Forecast3h, forcastMain: WeatherForecastResponse): CurrentWeatherResponse {
-    return CurrentWeatherResponse(
-        clouds = forcast3h.clouds,
-        coord = forcastMain!!.city.coord,
-        dt = forcast3h.dt,
-        id = forcastMain.city.id,
-        main = forcast3h.main,
-        name = forcastMain.city.name,
-        rain = forcast3h.rain?.let { Rain1h(it.`3h` / 3) },
-        snow = forcast3h.snow?.let { Snow1h(it.`3h` / 3) },
-        sys = Sys(
-            country = forcastMain.city.country,
-            sunrise = forcastMain.city.sunrise,
-            sunset = forcastMain.city.sunset
-        ),
-        timezone = forcastMain.city.timezone,
-        visibility = forcast3h.visibility ?:  0,
-        weather = forcast3h.weather,
-        wind = forcast3h.wind
-    )
-
 }
 

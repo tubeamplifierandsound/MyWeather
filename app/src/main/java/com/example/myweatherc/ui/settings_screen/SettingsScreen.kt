@@ -33,13 +33,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     geoObject: MutableState<GeoObject?>,
-    location : Location?
+    location: Location?
 ) {
     var expanded by remember { mutableStateOf(false) }
     var detectLocation by remember { mutableStateOf(SettingsManager.detectLocation) }
 
     val couroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect (SettingsManager.detectLocation){
+        detectLocation = SettingsManager.detectLocation
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -107,15 +110,7 @@ fun SettingsScreen(
                         onCheckedChange = { newVal ->
                             detectLocation = newVal
                             SettingsManager.saveDetectLocation(newVal)
-                                          if(newVal == true){
-                                              couroutineScope.launch {
-                                                  geoObject.value = RetrofitClient.weatherAPIService.getGeoObjectByCoords(
-                                                      latitude = location!!.latitude,
-                                                      longitude = location!!.longitude,
-                                                      apiKey = APISettings.API_KEY
-                                                  )[0]
-                                              }
-                                          }},
+                        },
                         colors = CheckboxDefaults.colors(
                             checkedColor = Color.Gray,
                             uncheckedColor = Color.LightGray

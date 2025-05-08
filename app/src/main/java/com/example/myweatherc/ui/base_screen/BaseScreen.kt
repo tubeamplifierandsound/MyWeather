@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -47,38 +47,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.example.myweatherc.navigation.AboutAppScreenNavigation
 import com.example.myweatherc.navigation.AirPollutionScreenNavigation
 import com.example.myweatherc.navigation.ForecastScreenNavigation
-import com.example.myweatherc.navigation.HomeScreenNavigation
+import com.example.myweatherc.navigation.WeatherScreenNavigation
 import com.example.myweatherc.navigation.MapScreenNavigation
 import com.example.myweatherc.navigation.SettingsScreenNavigation
 import com.example.myweatherc.ui.about_app_screen.AboutAppScreen
 import com.example.myweatherc.ui.theme.base_screen.bottom_nav.BottomNavBar
-import com.example.myweatherc.ui.theme.home_screen.HomeScreen
+import com.example.myweatherc.ui.weather_screen.CurrentWeatherScreen
 import com.example.myweatherc.ui.air_pollution_screen.AirPollutionScreen
 import com.example.myweatherc.ui.forecast_screen.ForecastScreen
 import com.example.myweatherc.ui.map_screen.MapScreen
 import com.example.myweatherc.ui.settings_screen.SettingsScreen
 import kotlinx.coroutines.launch
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import coil3.request.crossfade
-import com.example.myweatherc.R
 import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
 import com.example.myweatherc.holders.ForecastHolder
-import com.example.myweatherc.navigation.DetailedHomeScreenNavigation
+import com.example.myweatherc.navigation.DetailedForecastScreenNavigation
 import com.example.myweatherc.navigation.GeoCodingScreenNavigation
 import com.example.myweatherc.ui.base_screen.drawer.CustomDrawer
-import com.example.myweatherc.ui.forecast_screen.getWeather
+import com.example.myweatherc.ui.forecast_screen.DetailedForecast
 import com.example.myweatherc.ui.geocoding_screen.GeoCodingScreen
 
 fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
@@ -95,9 +89,11 @@ fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
     ) {
         val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            ?: SettingsManager.loadLocCoordinates()
         callback(location)
-    } else {
-        callback(null)
+    } else { //?
+        SettingsManager.saveDetectLocation(false)
+        callback(SettingsManager.loadLocCoordinates())
     }
 }
 
@@ -119,25 +115,35 @@ fun BaseScreen() {
         locationPermissionGranted = isGranted
         if (isGranted) {
             getLastKnownLocation(context) { loc ->
+                SettingsManager.saveLocCoordinates(loc)
                 location = loc
             }
+        }else{
+            SettingsManager.saveDetectLocation(false)
         }
     }
 
-    LaunchedEffect(Unit) {
-        val permissionCheckResult = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
+    LaunchedEffect(Unit, SettingsManager.detectLocationClicks) {
+        if(SettingsManager.detectLocation){
+            val permissionCheckResult = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
 
-        locationPermissionGranted = permissionCheckResult == PackageManager.PERMISSION_GRANTED
+            locationPermissionGranted = permissionCheckResult == PackageManager.PERMISSION_GRANTED
 
-        if (locationPermissionGranted) {
-            getLastKnownLocation(context) { loc ->
-                location = loc
+            if (locationPermissionGranted) {
+                getLastKnownLocation(context) { loc ->
+                    SettingsManager.saveLocCoordinates(loc)
+                    location = loc
+                }
+            } else {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
-        } else {
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }else{
+            if(location == null){
+                location = SettingsManager.loadLocCoordinates()
+            }
         }
     }
 
@@ -148,17 +154,15 @@ fun BaseScreen() {
             try {
                 var latitude: Double
                 var longitude: Double
-                if (SettingsManager.detectLocation) {
-                    latitude = location?.latitude ?: 44.34
-                    longitude = location?.longitude ?: 10.99
+                if(location == null){
+                    location = SettingsManager.loadLocCoordinates()
                 }else{
-                    latitude = 44.34
-                    longitude = 10.99
+                    SettingsManager.saveLocCoordinates(location)
                 }
 
                 currentGeoObject.value = RetrofitClient.weatherAPIService.getGeoObjectByCoords(
-                    latitude = latitude,
-                    longitude = longitude,
+                    latitude = location!!.latitude,
+                    longitude = location!!.longitude,
                     apiKey = APISettings.API_KEY
                 )[0]
 
@@ -204,11 +208,11 @@ fun BaseScreen() {
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(0.55f)
-                        .background(Color.Black.copy(alpha = 0.7f))
+                        //.background(Color.Black.copy(alpha = 0.7f))
                 ) {
                     CustomDrawer(
-                        onCategoryClick ={ item: String ->
-                            when(item){
+                        onCategoryClick = { item: String ->
+                            when (item) {
                                 "Settings" -> navController.navigate(SettingsScreenNavigation)
                                 "Maps" -> navController.navigate(MapScreenNavigation)
                                 "About App" -> navController.navigate(AboutAppScreenNavigation)
@@ -224,7 +228,7 @@ fun BaseScreen() {
                 topBar = {
                     @OptIn(ExperimentalMaterial3Api::class)
                     TopAppBar(
-                        title = { Text("Weather App", color = Color.LightGray) },
+                        title = { Text("MyWeather", color = Color.LightGray) },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
                             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -244,7 +248,7 @@ fun BaseScreen() {
                 },
                 bottomBar = {
                     BottomNavBar(
-                        onHomeClick = { navController.navigate(HomeScreenNavigation) },
+                        onHomeClick = { navController.navigate(WeatherScreenNavigation) },
                         onForecastClick = { navController.navigate(ForecastScreenNavigation) },
                         onAirPollutionClick = { navController.navigate(AirPollutionScreenNavigation) },
                         onGeoCodingClick = { navController.navigate(GeoCodingScreenNavigation) }
@@ -260,34 +264,39 @@ fun BaseScreen() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = HomeScreenNavigation,
+                        startDestination = WeatherScreenNavigation,
                         modifier = Modifier.background(Color.Transparent)
                     ) {
-                        composable<HomeScreenNavigation> {
-                            HomeScreen(currentGeoObject.value,
+                        composable<WeatherScreenNavigation> {
+                            CurrentWeatherScreen(
+                                currentGeoObject.value,
                                 iconCode = iconCode,
-                                setIconCode = { iconCode = it },
-                                null)
+                                setIconCode = { iconCode = it }
+                            )
                         }
                         composable<ForecastScreenNavigation> {
                             ForecastScreen(currentGeoObject.value) {
-                                navController.navigate(DetailedHomeScreenNavigation)
+                                navController.navigate(DetailedForecastScreenNavigation)
 
                             }
                         }
 
-                        composable<DetailedHomeScreenNavigation>{
-                        val obj = getWeather(ForecastHolder.forecast!!.list[ForecastHolder.ind], ForecastHolder.forecast!!)
-                            HomeScreen(currentGeoObject.value,
-                                iconCode = iconCode,
+                        composable<DetailedForecastScreenNavigation> {
+                            DetailedForecast(
+                                currentGeoObject.value,
                                 setIconCode = { iconCode = it },
-                                obj)
+                                prevIcon = iconCode!!,
+                                forecastData = ForecastHolder.forecast!!
+                            )
                         }
+
                         composable<AirPollutionScreenNavigation> {
                             AirPollutionScreen(currentGeoObject.value)
                         }
                         composable<GeoCodingScreenNavigation> {
-                            GeoCodingScreen(currentGeoObject)
+                            GeoCodingScreen(currentGeoObject,
+                                location
+                            )
                         }
                         composable<SettingsScreenNavigation> {
                             SettingsScreen(currentGeoObject, location)
@@ -305,9 +314,4 @@ fun BaseScreen() {
             }
         }
     }
-}
-
-@Composable
-fun testFun(){
-
 }

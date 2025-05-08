@@ -36,9 +36,9 @@ fun CustomDrawer(
         "Settings", "Maps", "About App"
     )
 
-    LaunchedEffect(Unit) {
 
-    }
+
+
 
     Box(
         modifier = Modifier
@@ -55,6 +55,23 @@ fun CustomDrawer(
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Drawer icon
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                //  .background(Color.Black.copy(alpha = 0.7f))
+                ,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(110.dp),
+                    painter = painterResource(id = R.drawable.drawer_icon),
+                    contentDescription = ""
+                )
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

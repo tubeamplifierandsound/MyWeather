@@ -1,6 +1,9 @@
-package com.example.myweatherc.ui.theme.home_screen
+package com.example.myweatherc.ui.weather_screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,38 +12,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.current_weather.CurrentWeatherResponse
-import com.example.myweatherc.navigation.HomeScreenNavigation
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.ui.Alignment
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.em
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.example.myweatherc.R
+import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.app_settings.SettingsManager.metricsType
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.data.responses.geocoding.GeoObject
@@ -48,7 +34,9 @@ import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import com.example.myweatherc.ui.base_screen.geo_item.GeoInfo
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Surface
 
 fun convertUnixToDateTime(unixTime: Int): String {
     val instant = Instant.ofEpochSecond(unixTime.toLong())
@@ -59,38 +47,30 @@ fun convertUnixToDateTime(unixTime: Int): String {
 }
 
 @Composable
-fun HomeScreen(
+fun CurrentWeatherScreen(
     geoObject: GeoObject?,
     iconCode: String?,
-    setIconCode: (String) -> Unit,
-    forecastData: CurrentWeatherResponse?
+    setIconCode: (String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var weatherResponse by remember { mutableStateOf<CurrentWeatherResponse?>(null) }
-
 
     var errorText by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(geoObject) {
         if(geoObject != null){
-            if (forecastData != null){
-                weatherResponse = forecastData
-                val code = weatherResponse!!.weather.firstOrNull()?.icon
-                if (code != null) setIconCode(code)
-            }else{
-                coroutineScope.launch {
-                    try{
-                        weatherResponse = RetrofitClient.weatherAPIService.getCurrentWeather(
-                            latitude = geoObject.lat,
-                            longitude = geoObject.lon,
-                            apiKey = APISettings.API_KEY
-                        )
-                        val code = weatherResponse!!.weather.firstOrNull()?.icon
-                        if (code != null) setIconCode(code)
-                    }
-                    catch (e: Exception){
-                        errorText = "Error: ${e.localizedMessage}"
-                    }
+            coroutineScope.launch {
+                try{
+                    weatherResponse = RetrofitClient.weatherAPIService.getCurrentWeather(
+                        latitude = geoObject.lat,
+                        longitude = geoObject.lon,
+                        apiKey = APISettings.API_KEY
+                    )
+                    val code = weatherResponse!!.weather.firstOrNull()?.icon
+                    if (code != null) setIconCode(code)
+                }
+                catch (e: Exception){
+                    errorText = "Error: ${e.localizedMessage}"
                 }
             }
         }
@@ -106,7 +86,7 @@ fun HomeScreen(
                 Text(text = errorText!!)
             }
             weatherResponse != null -> {
-                val iconCode = weatherResponse!!.weather.firstOrNull()?.icon
+                //val iconCode = weatherResponse!!.weather.firstOrNull()?.icon
 
                 Column(
                     modifier = Modifier
@@ -120,9 +100,30 @@ fun HomeScreen(
                             .clip(RoundedCornerShape(12.dp))
                     ) {
                         if (geoObject!=null) {
-                            GeoInfo(geoObject,
-                                isExpanded = false
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ){
+                                GeoInfo(geoObject,
+                                    isExpanded = false,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick = {
+                                        //SettingsManager.saveDetectLocation(false)
+                                        SettingsManager.saveDetectLocation(true)
+                                              },
+                                    modifier = Modifier.size(60.dp)
+                                ){
+
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_location),
+                                            contentDescription= "Current",
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(50.dp)
+                                        )
+                                }
+                            }
                         }
 
                         Row(
@@ -133,6 +134,9 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 1.dp)
                             ) {
                                 Text(
                                     modifier = Modifier
@@ -167,7 +171,7 @@ fun HomeScreen(
                                 model = "https://openweathermap.org/img/wn/${iconCode}@4x.png",
                                 contentDescription = "Weather Icon",
                                 modifier = Modifier
-                                    .size(160.dp)
+                                    .size(140.dp)
                             )
                         }
                     }
@@ -186,8 +190,11 @@ fun HomeScreen(
                             thickness = 1.dp,
                             color = Color.Gray.copy(alpha = 0.5f)
                         )
-                        Text(text = "Wind speed: ${weatherResponse!!.wind.speed} ${metricsType.windMeasurement}, direction: ${weatherResponse!!.wind.deg}°", color = Color.LightGray,)
-                        Text(text = "Wind gust: ${weatherResponse!!.wind.gust} ${metricsType.windMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = "Wind speed: ${weatherResponse!!.wind.speed} ${metricsType.windMeasurement}, direction: ${weatherResponse!!.wind.deg}°", color = Color.LightGray)
+                        weatherResponse!!.wind?.gust.let{
+                            Text(text = "Wind gust: ${it} ${metricsType.windMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+
+                        }
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 4.dp),
                             thickness = 1.dp,
@@ -208,7 +215,6 @@ fun HomeScreen(
                             color = Color.Gray.copy(alpha = 0.5f)
                         )
                         weatherResponse!!.rain?.let {
-                            //Text(text = "Rain: ${it.`1h`} mm", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             Text(text = "Rain: %.2f mm".format(it.`1h`), color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 4.dp),
@@ -224,8 +230,9 @@ fun HomeScreen(
                                 color = Color.Gray.copy(alpha = 0.5f)
                             )
                         }
-                        Text(text = "Min temperature at the moment: ${weatherResponse!!.main.temp_min}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
-                        Text(text = "Max temperature at the moment: ${weatherResponse!!.main.temp_max}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+
+                            Text(text = "Min temperature at the moment: ${weatherResponse!!.main.temp_min}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+                            Text(text = "Max temperature at the moment: ${weatherResponse!!.main.temp_max}${metricsType.tempMeasurement}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 4.dp),
                             thickness = 1.dp,
@@ -233,6 +240,7 @@ fun HomeScreen(
                         )
                         Text(text = "Shift from UTC: ${weatherResponse!!.timezone/3600}h", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
                         Text(text = "Time of data calculation: ${convertUnixToDateTime(weatherResponse!!.dt)}", color = Color.LightGray, modifier = Modifier.padding(top = 5.dp))
+
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 4.dp),
                             thickness = 1.dp,

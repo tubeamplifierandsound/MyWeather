@@ -21,13 +21,13 @@ fun BottomNavBar(
     onGeoCodingClick: () -> Unit
 ) {
     val items = listOf(
-        BottomNavItem.Home,
+        BottomNavItem.Weather,
         BottomNavItem.Forecast,
         BottomNavItem.AirPollution,
         BottomNavItem.GeoCoding
     )
 
-    val selectedItem = remember { mutableStateOf(BottomNavItem.Home.route) }
+    val selectedItem = remember { mutableStateOf(BottomNavItem.Weather.route) }
 
     NavigationBar(containerColor = Color.Black.copy(alpha = 0.2f), tonalElevation = 4.dp) {
         items.forEach { item ->
@@ -36,7 +36,7 @@ fun BottomNavBar(
                 onClick = {
                     selectedItem.value = item.route
                     when (item) {
-                        BottomNavItem.Home -> onHomeClick()
+                        BottomNavItem.Weather -> onHomeClick()
                         BottomNavItem.Forecast -> onForecastClick()
                         BottomNavItem.AirPollution -> onAirPollutionClick()
                         BottomNavItem.GeoCoding -> onGeoCodingClick()

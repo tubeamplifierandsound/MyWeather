@@ -1,5 +1,6 @@
 package com.example.myweatherc.ui.geocoding_screen
 
+import android.location.Location
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.myweatherc.app_settings.SettingsManager
 import com.example.myweatherc.client.APISettings
 import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
@@ -38,9 +40,17 @@ enum class SearchType {
     NAME
 }
 
+enum class Hemisphere{
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST
+}
+
 @Composable
 fun GeoCodingScreen(
-    geoObject: MutableState<GeoObject?>
+    geoObject: MutableState<GeoObject?>,
+    loc: Location?
 ) {
     var selectedSearchType by remember { mutableStateOf(SearchType.NAME) }
     var latitude by remember { mutableStateOf("") }
@@ -56,8 +66,8 @@ fun GeoCodingScreen(
     var geoObjects by remember { mutableStateOf<List<GeoObject>>(emptyList()) }
     val scope = rememberCoroutineScope()
 
-    var latDirection by remember { mutableStateOf("N") }
-    var lonDirection by remember { mutableStateOf("E") }
+    var latHemisphere by remember { mutableStateOf(Hemisphere.NORTH) }
+    var lonHemisphere by remember { mutableStateOf(Hemisphere.EAST) }
 
     LaunchedEffect(selectedSearchType) {
         latitude = ""
@@ -80,9 +90,6 @@ fun GeoCodingScreen(
 
         when (selectedSearchType) {
             SearchType.COORDINATES -> {
-
-
-
                 CoordinateInputs(
                     lat = latitudeStr,
                     onLatChange = {
@@ -90,10 +97,10 @@ fun GeoCodingScreen(
                                   },
                     lon = longitudeStr,
                     onLonChange = { longitudeStr = it },
-                    latDirection = latDirection,
-                    onLatDirectionChange = { latDirection = it },
-                    lonDirection = lonDirection,
-                    onLonDirectionChange = { lonDirection = it }
+                    latHemisphere = latHemisphere,
+                    onLatHemisphereChange = { latHemisphere = it },
+                    lonHemisphere = lonHemisphere,
+                    onLonHemisphereChange = { lonHemisphere = it }
                 )
 
             }
@@ -123,8 +130,8 @@ fun GeoCodingScreen(
 
         Button(
             onClick = {
-                latitude = parseCoordinate(latitudeStr, latDirection).toString()
-                longitude = parseCoordinate(longitudeStr, lonDirection).toString()
+                latitude = parseCoordinate(latitudeStr, latHemisphere).toString()
+                longitude = parseCoordinate(longitudeStr, lonHemisphere).toString()
                 scope.launch {
                     isLoading = true
                     errorMessage = null
@@ -191,6 +198,9 @@ fun GeoCodingScreen(
                         isExpanded = true,
                         onItemSelected = {
                             geoObject.value = it
+                            loc!!.latitude = geoObject!!.value!!.lat
+                            loc!!.longitude = geoObject!!.value!!.lon
+                            SettingsManager.saveLocCoordinates(loc)
                         }
                         )
                 }
