@@ -1,9 +1,6 @@
 package com.example.myweatherc.ui.weather_screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,14 +32,11 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Surface
 
 fun convertUnixToDateTime(unixTime: Int): String {
     val instant = Instant.ofEpochSecond(unixTime.toLong())
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
         .withZone(ZoneId.systemDefault())
-
     return formatter.format(instant)
 }
 
@@ -86,8 +80,6 @@ fun CurrentWeatherScreen(
                 Text(text = errorText!!)
             }
             weatherResponse != null -> {
-                //val iconCode = weatherResponse!!.weather.firstOrNull()?.icon
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -110,7 +102,6 @@ fun CurrentWeatherScreen(
                                 )
                                 IconButton(
                                     onClick = {
-                                        //SettingsManager.saveDetectLocation(false)
                                         SettingsManager.saveDetectLocation(true)
                                               },
                                     modifier = Modifier.size(60.dp)

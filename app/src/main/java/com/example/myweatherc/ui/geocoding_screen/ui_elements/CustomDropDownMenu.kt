@@ -1,6 +1,5 @@
 package com.example.myweatherc.ui.geocoding_screen.ui_elements
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
@@ -30,7 +28,6 @@ fun <T> CustomDropDownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    // Широта с выбором направления
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },

@@ -3,11 +3,9 @@ package com.example.myweatherc.app_settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
-import android.location.LocationManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.example.myweatherc.data.responses.geocoding.GeoObject
 
 object SettingsManager {
     const val STORAGE_NAME = "WEATHER_STORE"
@@ -60,13 +58,6 @@ object SettingsManager {
         preferences.edit()
             .putString(KEY_LAT, lat)
             .putString(KEY_LON, lon)
-            .apply()
-    }
-
-    fun saveLocCoordinates(lat: Double, lon: Double){
-        preferences.edit()
-            .putString(KEY_LAT, lat.toString())
-            .putString(KEY_LON, lon.toString())
             .apply()
     }
 

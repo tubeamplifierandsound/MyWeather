@@ -1,6 +1,5 @@
 package com.example.myweatherc.ui.forecast_screen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,21 +28,15 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.myweatherc.data.responses.forecast_3h.objects.Forecast3h
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import com.example.myweatherc.data.responses.current_weather.CurrentWeatherResponse
-import com.example.myweatherc.data.responses.current_weather.objects.Coord
 import com.example.myweatherc.ui.forecast_screen.ui_elements.ForecastItem
 import com.example.myweatherc.ui.forecast_screen.ui_elements.ForecastTypeSelector
-import com.example.myweatherc.data.responses.current_weather.objects.Rain1h
-import com.example.myweatherc.data.responses.current_weather.objects.Snow1h
-import com.example.myweatherc.data.responses.current_weather.objects.Sys
 import com.example.myweatherc.holders.ForecastHolder
 
 

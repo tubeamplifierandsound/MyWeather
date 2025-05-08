@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -208,7 +207,6 @@ fun BaseScreen() {
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(0.55f)
-                        //.background(Color.Black.copy(alpha = 0.7f))
                 ) {
                     CustomDrawer(
                         onCategoryClick = { item: String ->

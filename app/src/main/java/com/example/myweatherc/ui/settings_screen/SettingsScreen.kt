@@ -3,10 +3,6 @@ package com.example.myweatherc.ui.settings_screen
 import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,17 +13,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myweatherc.app_settings.Metrics
 import com.example.myweatherc.app_settings.SettingsManager
-import com.example.myweatherc.client.APISettings
-import com.example.myweatherc.client.RetrofitClient
 import com.example.myweatherc.data.responses.geocoding.GeoObject
-import com.example.myweatherc.navigation.SettingsScreenNavigation
-import com.example.myweatherc.ui.forecast_screen.ForcastType
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
