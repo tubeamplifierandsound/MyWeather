@@ -73,7 +73,6 @@ fun CoordinateInputs(
 }
 
 
-// Функция для преобразования в числовое значение
 fun parseCoordinate(value: String, hemisphere: Hemisphere): Double? {
     return try {
         val numericValue = value.toDouble()

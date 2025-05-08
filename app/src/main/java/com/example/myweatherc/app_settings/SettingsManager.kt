@@ -23,7 +23,6 @@ object SettingsManager {
     var metricsType: Metrics = DEFAULT_METRICS
     var detectLocation by mutableStateOf(DEFAULT_LOC_DETECTION)
     var detectLocationClicks by mutableStateOf(0)
-    //var detectLocation: Boolean = DEFAULT_LOC_DETECTION
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(STORAGE_NAME, Context.MODE_PRIVATE)

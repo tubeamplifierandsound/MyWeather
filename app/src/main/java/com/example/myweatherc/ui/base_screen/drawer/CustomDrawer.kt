@@ -48,12 +48,10 @@ fun CustomDrawer(
         Column(
             modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Drawer icon
             Column(
                 Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                //  .background(Color.Black.copy(alpha = 0.7f))
                 ,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center

@@ -90,7 +90,7 @@ fun getLastKnownLocation(context: Context, callback: (Location?) -> Unit) {
             ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             ?: SettingsManager.loadLocCoordinates()
         callback(location)
-    } else { //?
+    } else {
         SettingsManager.saveDetectLocation(false)
         callback(SettingsManager.loadLocCoordinates())
     }
